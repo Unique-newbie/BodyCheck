@@ -1,8 +1,8 @@
 /**
- * Developer documentation & attribution record for demonstration photographic assets.
+ * Developer documentation & attribution record for open-source photographic assets.
  * All images are bundled locally in public/images/demo/ for offline reliability and Vercel compatibility.
- * Sourced from Wikimedia Commons / public domain / Creative Commons photography.
- * Subject representations are strictly anonymous, non-identifiable, non-graphic, and synthetic in medical context.
+ * Sourced from Wikimedia Commons and open-source Creative Commons / Public Domain photography.
+ * Subject representations are strictly anonymous, non-identifiable, non-graphic, and used for clinical workflow documentation.
  */
 
 export interface ImageAssetAttribution {
@@ -23,29 +23,32 @@ export const DEMO_IMAGE_ATTRIBUTIONS: ImageAssetAttribution[] = [
     bodyRegion: 'Left Shoulder',
     referenceFile: 'if456-shoulder-ref.jpg',
     reviewFile: 'if456-shoulder-review.jpg',
-    sourceOrigin: 'Synthetic Documentation Photography (Primary Demonstration)',
-    license: 'Internal Demonstrator License / CC-BY Compatible',
-    attribution: 'Body Check Synthetic Demo Assets',
-    notes: 'Primary demonstration pair: normal baseline deltoid vs. review showing subtle localized reddish discoloration.'
+    sourceOrigin: 'Wikimedia Commons',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Left_shoulder.jpg',
+    license: 'Creative Commons Attribution-Share Alike 4.0 International (CC BY-SA 4.0)',
+    attribution: 'Left shoulder / Alexander / Wikimedia Commons',
+    notes: 'Open-source photographic baseline of left shoulder deltoid vs. review showing localized reddish discoloration.'
   },
   {
     scenarioId: 'IF455',
     bodyRegion: 'Right Forearm',
     referenceFile: 'if455-forearm-ref.jpg',
     reviewFile: 'if455-forearm-review.jpg',
-    sourceOrigin: 'Synthetic Documentation Photography',
-    license: 'Internal Demonstrator License / CC-BY Compatible',
-    attribution: 'Body Check Synthetic Demo Assets',
-    notes: 'Forearm inspection showing subtle superficial linear surface erythema.'
+    sourceOrigin: 'Wikimedia Commons',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Blood_testing_bruise_on_arm_1.jpg',
+    license: 'Creative Commons Attribution 4.0 International (CC BY 4.0)',
+    attribution: 'Blood testing bruise on arm 1 / W.carter / Wikimedia Commons',
+    notes: 'Volar forearm inspection showing authentic superficial linear surface erythema.'
   },
   {
     scenarioId: 'IF452',
     bodyRegion: 'Back',
     referenceFile: 'if452-back-ref.jpg',
     reviewFile: 'if452-back-review.jpg',
-    sourceOrigin: 'Synthetic Documentation Photography',
-    license: 'Internal Demonstrator License / CC-BY Compatible',
-    attribution: 'Body Check Synthetic Demo Assets',
+    sourceOrigin: 'Wikimedia Commons',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Skin_tanning.JPG',
+    license: 'Creative Commons Attribution-Share Alike 3.0 Unported (CC BY-SA 3.0)',
+    attribution: 'Skin tanning / Wikimedia Commons',
     notes: 'Upper thoracic dorsal documentation demonstrating unremarkable follow-up (no significant visible change).'
   },
   {
@@ -53,10 +56,11 @@ export const DEMO_IMAGE_ATTRIBUTIONS: ImageAssetAttribution[] = [
     bodyRegion: 'Right Lower Leg',
     referenceFile: 'if439-knee-ref.jpg',
     reviewFile: 'if439-knee-review.jpg',
-    sourceOrigin: 'Synthetic Documentation Photography',
-    license: 'Internal Demonstrator License / CC-BY Compatible',
-    attribution: 'Body Check Synthetic Demo Assets',
-    notes: 'Patellar / lower leg region showing faint mottled discoloration.'
+    sourceOrigin: 'Wikimedia Commons',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Bruise_on_the_calf_1.jpg',
+    license: 'Creative Commons Zero (CC0) 1.0 Universal Public Domain Dedication',
+    attribution: 'Bruise on the calf 1 / Wikimedia Commons',
+    notes: 'Calf and lower leg documentation showing authentic mottled surface discoloration.'
   },
   {
     scenarioId: 'IF461',
@@ -65,7 +69,7 @@ export const DEMO_IMAGE_ATTRIBUTIONS: ImageAssetAttribution[] = [
     reviewFile: 'if461-rshoulder-review.jpg',
     sourceOrigin: 'Wikimedia Commons',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Detailed_view_of_male_right_shoulder,_photographed_when_arm_stretched_out_to_side.jpg',
-    license: 'Creative Commons Attribution-Share Alike 3.0 Unported (CC BY-SA 3.0)',
+    license: 'Creative Commons Attribution-Share Alike 4.0 International (CC BY-SA 4.0)',
     attribution: 'Detailed view of male right shoulder / Wikimedia Commons',
     notes: 'Cropped right acromial/deltoid aspect: baseline intact skin vs. localized minor contusion-like reddish discoloration.'
   },
@@ -75,10 +79,10 @@ export const DEMO_IMAGE_ATTRIBUTIONS: ImageAssetAttribution[] = [
     referenceFile: 'if468-lupperarm-ref.jpg',
     reviewFile: 'if468-lupperarm-review.jpg',
     sourceOrigin: 'Wikimedia Commons / Flickr',
-    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Shoulder_-_Flickr_-_Stiller_Beobachter_(1).jpg',
-    license: 'Creative Commons Attribution 2.0 Generic (CC BY 2.0)',
-    attribution: 'Stiller Beobachter / Wikimedia Commons',
-    notes: 'Cropped upper arm / bicep region showing subtle mottled skin appearance difference.'
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Upper_Arm_Bruise.jpg',
+    license: 'Creative Commons Attribution-Share Alike 3.0 Unported (CC BY-SA 3.0)',
+    attribution: 'Upper Arm Bruise / Whoisjohngalt / Wikimedia Commons',
+    notes: 'Cropped upper arm / bicep region showing authentic mottled skin appearance difference.'
   },
   {
     scenarioId: 'IF472',
