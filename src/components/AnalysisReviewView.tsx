@@ -73,7 +73,7 @@ export const AnalysisReviewView: React.FC<AnalysisReviewViewProps> = ({
   const [isConfirmingModalOpen, setIsConfirmingModalOpen] = useState<boolean>(false);
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
   const [reviewerName, setReviewerName] = useState<string>(currentUser?.name || 'Sarah Mitchell');
-  const [reviewerRole, setReviewerRole] = useState<string>(currentUser?.role || 'Authorized Staff');
+  const [reviewerRole, setReviewerRole] = useState<string>(currentUser?.role || 'Reviewer');
   const [reviewerNotes, setReviewerNotes] = useState<string>('');
   const [confirmedTimestamp, setConfirmedTimestamp] = useState<string>('');
   
@@ -296,7 +296,7 @@ export const AnalysisReviewView: React.FC<AnalysisReviewViewProps> = ({
               ) : (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
                   <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-                  AI Draft Ready — Authorized Human Review Required
+                  AI Draft Ready — Human Review Required
                 </span>
               )}
             </div>
@@ -575,7 +575,7 @@ export const AnalysisReviewView: React.FC<AnalysisReviewViewProps> = ({
               </span>
             </div>
             <p className="text-[11px] text-slate-500 mt-0.5">
-              Preliminary natural-language draft for authorized human safeguarding review. Reviewer must verify and confirm.
+              Preliminary draft for human review. Reviewer must verify and confirm.
             </p>
           </div>
 
@@ -666,11 +666,11 @@ export const AnalysisReviewView: React.FC<AnalysisReviewViewProps> = ({
           </div>
         )}
 
-        {/* Safety & Governance Notice */}
+        {/* Assistive Notice */}
         <div className="text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded border border-slate-200 flex items-start gap-2">
           <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
           <div>
-            <span className="font-semibold text-slate-700">Governance Notice:</span> AI-generated observations are assistive and require human review and human confirmation. They are not medical diagnoses.
+            AI-generated observations are assistive and require human review and confirmation. They do not constitute medical diagnosis.
           </div>
         </div>
 
@@ -679,7 +679,7 @@ export const AnalysisReviewView: React.FC<AnalysisReviewViewProps> = ({
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
             <div className="text-xs text-slate-500 flex items-center gap-1.5">
               <UserCheck className="w-4 h-4 text-slate-400" />
-              <span>Authorized Reviewer: <strong className="text-slate-800">{reviewerName}</strong> ({reviewerRole})</span>
+              <span>Reviewer: <strong className="text-slate-800">{reviewerName}</strong> ({reviewerRole})</span>
             </div>
 
             <button
@@ -701,7 +701,7 @@ export const AnalysisReviewView: React.FC<AnalysisReviewViewProps> = ({
               onClick={onNavigateHistory}
               className="text-sky-700 hover:text-sky-900 font-semibold hover:underline flex items-center gap-1"
             >
-              <span>Go to Audit History</span>
+              <span>Go to History</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>

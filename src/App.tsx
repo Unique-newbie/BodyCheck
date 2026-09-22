@@ -284,7 +284,7 @@ export const App: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="font-semibold text-slate-800">Body Check</span>
             <span className="text-slate-300">•</span>
-            <span>Internal Healthcare & Safeguarding Review</span>
+            <span>Visual Comparison & Documentation</span>
           </div>
           <div className="flex items-center gap-3 font-mono text-[11px] text-slate-500">
             <span className="hidden md:inline">Logged in as {currentUser.email}</span>

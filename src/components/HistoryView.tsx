@@ -51,7 +51,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight">Body Check History</h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Audit-ready log of past and pending visual body-check comparisons and human-confirmed observations.
+            Previous body-check records and comparison results.
           </p>
         </div>
 
@@ -208,7 +208,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                             Confirmed
                           </span>
                           <div className="text-[10px] text-slate-500 mt-0.5 font-medium">
-                            {record.reviewer || 'Clinical Reviewer'}
+                            {record.reviewer || 'Reviewer'}
                           </div>
                         </div>
                       ) : record.status === 'ai_draft_ready' ? (

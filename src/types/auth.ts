@@ -13,9 +13,9 @@ export interface AuthState {
 
 export const DEMO_USER: UserProfile = {
   name: 'Sarah Mitchell',
-  role: 'Authorized Staff',
+  role: 'Reviewer',
   email: 's.mitchell@bodycheck.org',
-  facility: 'Youth Safeguarding & Wellbeing Unit',
+  facility: 'Care & Wellbeing Unit',
 };
 
 export const DEMO_CREDENTIALS = {

@@ -86,7 +86,7 @@ export interface BodyCheckRecord {
   // Human Review Status & Governance
   status: CheckStatus;
   reviewer?: string; // e.g. "Sarah Mitchell"
-  reviewerRole?: string; // e.g. "Authorized Staff"
+  reviewerRole?: string; // e.g. "Reviewer"
   confirmedAt?: string;
   reviewerNotes?: string;
   

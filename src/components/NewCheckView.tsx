@@ -221,7 +221,7 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
 
     // Validate size (max 15MB)
     if (file.size > 15 * 1024 * 1024) {
-      setValidationError('File size exceeds 15MB limit. Please provide an optimized clinical photo.');
+      setValidationError('File size exceeds 15MB limit. Please provide an optimized photo.');
       return;
     }
 

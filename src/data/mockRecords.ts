@@ -163,7 +163,7 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
     title: 'IF439 — Right Lower Leg (Faint Mottled Discoloration)',
     patientRecordId: 'IF439',
     bodyRegion: 'Right Lower Leg',
-    description: 'Post-activity safeguarding check noting faint mottled discoloration along the lateral patellar border.',
+    description: 'Post-activity check noting faint mottled discoloration along the lateral patellar border.',
     referenceDate: '2026-09-12 13:10',
     newImageDate: '2026-09-20 16:30',
     referenceImage: DEMO_ASSETS.if439.reference,
@@ -348,31 +348,31 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
   }
 ];
 
-// Patient / Youth Test Records for selector
+// Monitored records for selector
 export const MOCK_PATIENTS: PatientRecord[] = [
   {
     id: 'IF456',
-    name: 'Youth Record IF-456',
+    name: 'Record IF-456',
     unit: 'Residential Unit B (Care & Wellbeing)',
     dateOfBirth: '2009-04-12',
-    primaryCaregiver: 'Safeguarding Officer Miller',
+    primaryCaregiver: 'Case Officer Miller',
     lastCheckDate: '2026-09-14 09:30',
     activeStatus: 'active',
     defaultRegion: 'Left Shoulder'
   },
   {
     id: 'IF455',
-    name: 'Youth Record IF-455',
+    name: 'Record IF-455',
     unit: 'Residential Unit A (Assessment)',
     dateOfBirth: '2010-08-25',
-    primaryCaregiver: 'Sarah Mitchell, Authorized Staff',
+    primaryCaregiver: 'Sarah Mitchell, Reviewer',
     lastCheckDate: '2026-09-10 11:00',
     activeStatus: 'active',
     defaultRegion: 'Right Forearm'
   },
   {
     id: 'IF452',
-    name: 'Youth Record IF-452',
+    name: 'Record IF-452',
     unit: 'Community Care Placement Unit',
     dateOfBirth: '2008-11-03',
     primaryCaregiver: 'Case Worker D. Chen',
@@ -382,27 +382,27 @@ export const MOCK_PATIENTS: PatientRecord[] = [
   },
   {
     id: 'IF439',
-    name: 'Youth Record IF-439',
-    unit: 'Adolescent Support Wing',
+    name: 'Record IF-439',
+    unit: 'Care Support Wing',
     dateOfBirth: '2009-01-19',
-    primaryCaregiver: 'Youth Care Worker T. Harris',
+    primaryCaregiver: 'Care Worker T. Harris',
     lastCheckDate: '2026-09-12 13:10',
     activeStatus: 'active',
     defaultRegion: 'Right Lower Leg'
   },
   {
     id: 'IF461',
-    name: 'Youth Record IF-461',
+    name: 'Record IF-461',
     unit: 'Residential Unit C (Health & Safety)',
     dateOfBirth: '2009-07-14',
-    primaryCaregiver: 'Sarah Mitchell, Authorized Staff',
+    primaryCaregiver: 'Sarah Mitchell, Reviewer',
     lastCheckDate: '2026-09-11 14:00',
     activeStatus: 'active',
     defaultRegion: 'Right Shoulder'
   },
   {
     id: 'IF468',
-    name: 'Youth Record IF-468',
+    name: 'Record IF-468',
     unit: 'Transitional Care Unit 2',
     dateOfBirth: '2010-02-18',
     primaryCaregiver: 'Senior Practitioner O. Bailey',
@@ -412,7 +412,7 @@ export const MOCK_PATIENTS: PatientRecord[] = [
   },
   {
     id: 'IF472',
-    name: 'Youth Record IF-472',
+    name: 'Record IF-472',
     unit: 'Residential Unit A (Intake Assessment)',
     dateOfBirth: '2008-09-05',
     primaryCaregiver: 'Case Worker J. Patel',
@@ -422,10 +422,10 @@ export const MOCK_PATIENTS: PatientRecord[] = [
   },
   {
     id: 'IF477',
-    name: 'Youth Record IF-477',
-    unit: 'Adolescent Support Wing',
+    name: 'Record IF-477',
+    unit: 'Care Support Wing',
     dateOfBirth: '2009-11-22',
-    primaryCaregiver: 'Safeguarding Officer Miller',
+    primaryCaregiver: 'Case Officer Miller',
     lastCheckDate: '2026-09-15 11:45',
     activeStatus: 'active',
     defaultRegion: 'Right Knee'
@@ -438,7 +438,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
   {
     id: 'BC-2026-0889',
     patientRecordId: 'IF455',
-    patientName: 'Youth Record IF-455',
+    patientName: 'Record IF-455',
     referenceImage: DEMO_ASSETS.if455.reference,
     referenceImageId: 'IF455',
     referenceDate: '2026-09-10 11:00',
@@ -466,7 +466,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
     finalObservation: 'Reviewing the new picture against reference image IF455, superficial linear erythema is noted across the distal volar aspect of the right forearm without visible swelling. Skin is unbroken.',
     status: 'confirmed',
     reviewer: 'Sarah Mitchell',
-    reviewerRole: 'Authorized Staff',
+    reviewerRole: 'Reviewer',
     confirmedAt: '2026-09-21 11:05',
     reviewerNotes: 'Surface cleansed. Routine reassessment scheduled for morning rounds.',
     changeCoordinates: {
@@ -479,7 +479,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
         id: 'aud-889-4',
         timestamp: '2026-09-21 11:05',
         actor: 'Sarah Mitchell',
-        actorRole: 'Authorized Staff',
+        actorRole: 'Reviewer',
         action: 'Observation confirmed',
         details: 'Observation confirmed with note: "Surface cleansed. Routine reassessment scheduled for morning rounds."'
       },
@@ -495,7 +495,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
         id: 'aud-889-2',
         timestamp: '2026-09-21 10:45',
         actor: 'Sarah Mitchell',
-        actorRole: 'Authorized Staff',
+        actorRole: 'Reviewer',
         action: 'Review check initiated',
         details: 'New review image IF455-REV-04 registered for Right Forearm.'
       },
@@ -514,7 +514,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
   {
     id: 'BC-2026-0895',
     patientRecordId: 'IF461',
-    patientName: 'Youth Record IF-461',
+    patientName: 'Record IF-461',
     referenceImage: DEMO_ASSETS.if461.reference,
     referenceImageId: 'IF461',
     referenceDate: '2026-09-11 14:00',
@@ -542,9 +542,9 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
     finalObservation: 'Reviewing the new picture against reference image IF461, localized reddish discoloration is present on the lateral right shoulder deltoid. Consistent with minor surface contusion. No edema.',
     status: 'confirmed',
     reviewer: 'Sarah Mitchell',
-    reviewerRole: 'Authorized Staff',
+    reviewerRole: 'Reviewer',
     confirmedAt: '2026-09-21 11:40',
-    reviewerNotes: 'Documented in youth daily log. Monitoring comfort.',
+    reviewerNotes: 'Documented in daily log. Monitoring comfort.',
     changeCoordinates: {
       xPercent: 52.0,
       yPercent: 46.0,
@@ -555,9 +555,9 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
         id: 'aud-895-4',
         timestamp: '2026-09-21 11:40',
         actor: 'Sarah Mitchell',
-        actorRole: 'Authorized Staff',
+        actorRole: 'Reviewer',
         action: 'Observation confirmed',
-        details: 'Observation confirmed with note: "Documented in youth daily log. Monitoring comfort."'
+        details: 'Observation confirmed with note: "Documented in daily log. Monitoring comfort."'
       },
       {
         id: 'aud-895-3',
@@ -571,7 +571,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
         id: 'aud-895-2',
         timestamp: '2026-09-21 11:20',
         actor: 'Sarah Mitchell',
-        actorRole: 'Authorized Staff',
+        actorRole: 'Reviewer',
         action: 'Review check initiated',
         details: 'New review image IF461-REV-02 registered for Right Shoulder.'
       },
@@ -590,7 +590,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
   {
     id: 'BC-2026-0872',
     patientRecordId: 'IF452',
-    patientName: 'Youth Record IF-452',
+    patientName: 'Record IF-452',
     referenceImage: DEMO_ASSETS.if452.reference,
     referenceImageId: 'IF452',
     referenceDate: '2026-09-08 16:20',
@@ -637,7 +637,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
         id: 'aud-872-2',
         timestamp: '2026-09-21 15:00',
         actor: 'Case Worker D. Chen',
-        actorRole: 'Authorized Staff',
+        actorRole: 'Reviewer',
         action: 'Review check initiated',
         details: 'New review image IF452-REV-01 registered for Upper Back.'
       },
@@ -656,7 +656,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
   {
     id: 'BC-2026-0851',
     patientRecordId: 'IF472',
-    patientName: 'Youth Record IF-472',
+    patientName: 'Record IF-472',
     referenceImage: DEMO_ASSETS.if472.reference,
     referenceImageId: 'IF472',
     referenceDate: '2026-09-09 09:15',
@@ -703,7 +703,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
         id: 'aud-851-2',
         timestamp: '2026-09-21 13:30',
         actor: 'Case Worker J. Patel',
-        actorRole: 'Authorized Staff',
+        actorRole: 'Reviewer',
         action: 'Review check initiated',
         details: 'New review image IF472-REV-02 registered for Lower Back.'
       },
@@ -722,7 +722,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
   {
     id: 'BC-2026-0898',
     patientRecordId: 'IF468',
-    patientName: 'Youth Record IF-468',
+    patientName: 'Record IF-468',
     referenceImage: DEMO_ASSETS.if468.reference,
     referenceImageId: 'IF468',
     referenceDate: '2026-09-13 10:30',
@@ -767,7 +767,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
         id: 'aud-898-2',
         timestamp: '2026-09-21 15:45',
         actor: 'Senior Practitioner O. Bailey',
-        actorRole: 'Authorized Staff',
+        actorRole: 'Reviewer',
         action: 'Review check initiated',
         details: 'New review image IF468-REV-01 registered for Left Upper Arm.'
       },
@@ -786,7 +786,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
   {
     id: 'BC-2026-0864',
     patientRecordId: 'IF439',
-    patientName: 'Youth Record IF-439',
+    patientName: 'Record IF-439',
     referenceImage: DEMO_ASSETS.if439.reference,
     referenceImageId: 'IF439',
     referenceDate: '2026-09-12 13:10',
@@ -830,8 +830,8 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
       {
         id: 'aud-864-2',
         timestamp: '2026-09-20 16:30',
-        actor: 'Youth Care Worker T. Harris',
-        actorRole: 'Authorized Staff',
+        actor: 'Care Worker T. Harris',
+        actorRole: 'Reviewer',
         action: 'Review check initiated',
         details: 'New review image IF439-REV-03 registered for Right Lower Leg.'
       },
@@ -850,7 +850,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
   {
     id: 'BC-2026-0847',
     patientRecordId: 'IF477',
-    patientName: 'Youth Record IF-477',
+    patientName: 'Record IF-477',
     referenceImage: DEMO_ASSETS.if477.reference,
     referenceImageId: 'IF477',
     referenceDate: '2026-09-15 11:45',
@@ -876,8 +876,8 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
       {
         id: 'aud-847-2',
         timestamp: '2026-09-21 16:15',
-        actor: 'Safeguarding Officer Miller',
-        actorRole: 'Authorized Staff',
+        actor: 'Case Officer Miller',
+        actorRole: 'Reviewer',
         action: 'Review check initiated',
         details: 'New review image IF477-REV-01 registered for Right Knee.'
       },

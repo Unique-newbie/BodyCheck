@@ -79,7 +79,7 @@ export const DetailView: React.FC<DetailViewProps> = ({ record, onBack }) => {
               className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded border border-slate-300 transition-colors flex items-center gap-1.5"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Print Audit Record</span>
+              <span>Print Record</span>
             </button>
           </div>
         </div>
@@ -88,7 +88,7 @@ export const DetailView: React.FC<DetailViewProps> = ({ record, onBack }) => {
       {/* Printable Report Header */}
       <div className="hidden print:block border-b border-slate-400 pb-4 mb-4">
         <h1 className="text-xl font-bold">Body Check Visual Comparison Record</h1>
-        <p className="text-xs text-slate-600">Internal Healthcare & Safeguarding Audit Documentation</p>
+        <p className="text-xs text-slate-600">Comparison Documentation</p>
         <div className="text-xs font-mono mt-2">
           Record ID: {record.id} | Patient: {record.patientRecordId} | Date: {record.newImageDate}
         </div>
@@ -253,7 +253,7 @@ export const DetailView: React.FC<DetailViewProps> = ({ record, onBack }) => {
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
               2. Final Human-Confirmed Observation
             </span>
-            <span className="text-[10px] font-mono text-emerald-700 font-bold">Authoritative Attestation</span>
+            <span className="text-[10px] font-mono text-emerald-700 font-bold">Confirmed Observation</span>
           </div>
           <p className="text-slate-900 font-medium text-sm leading-relaxed">
             "{record.finalObservation || record.aiObservation}"
@@ -269,7 +269,7 @@ export const DetailView: React.FC<DetailViewProps> = ({ record, onBack }) => {
 
           <div>
             <span className="text-slate-500 block text-[10px] uppercase font-bold">Reviewer Role</span>
-            <span className="text-slate-700 mt-0.5 block">{record.reviewerRole || 'Authorized Staff'}</span>
+            <span className="text-slate-700 mt-0.5 block">{record.reviewerRole || 'Reviewer'}</span>
           </div>
 
           <div>
@@ -291,9 +291,9 @@ export const DetailView: React.FC<DetailViewProps> = ({ record, onBack }) => {
         <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
             <History className="w-3.5 h-3.5 text-slate-500" />
-            Audit Activity Timeline ({record.auditTrail?.length || 0} Events)
+            Activity Timeline ({record.auditTrail?.length || 0} Events)
           </h2>
-          <span className="text-[11px] font-mono text-slate-400">Chronological Lifecycle Log</span>
+          <span className="text-[11px] font-mono text-slate-400">Activity Log</span>
         </div>
 
         <div className="relative pl-6 space-y-4 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">

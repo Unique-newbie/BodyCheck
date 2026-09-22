@@ -9,8 +9,7 @@ import {
   User, 
   Settings, 
   LogOut, 
-  X,
-  CheckCircle2
+  X
 } from 'lucide-react';
 import { UserProfile } from '../types/auth';
 
@@ -157,9 +156,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <div className="text-sm font-bold text-slate-900">{currentUser.name}</div>
                       <div className="text-xs text-slate-600 font-medium mt-0.5">{currentUser.role}</div>
                       <div className="text-xs text-slate-400 font-mono mt-1 truncate">{currentUser.email}</div>
-                      <div className="mt-2 text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 inline-block">
-                        ● Authorized Staff Session
-                      </div>
                     </div>
 
                     {/* Menu Items */}
@@ -173,7 +169,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         className="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 transition-colors"
                       >
                         <User className="w-4 h-4 text-slate-400" />
-                        <span>Staff Profile</span>
+                        <span>Profile</span>
                       </button>
 
                       <button
@@ -214,7 +210,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </header>
 
-      {/* Staff Profile Modal */}
+      {/* Profile Modal */}
       {activeModal === 'profile' && (
         <div 
           className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
@@ -230,8 +226,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   SM
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">Staff Profile</h3>
-                  <p className="text-[11px] text-slate-500">Authorized Personnel Record</p>
+                  <h3 className="text-sm font-bold text-slate-900">Profile</h3>
+                  <p className="text-[11px] text-slate-500">Account details</p>
                 </div>
               </div>
               <button
@@ -250,27 +246,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <span className="font-semibold text-slate-900">{currentUser.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">System Role</span>
+                  <span className="text-slate-500">Role</span>
                   <span className="font-semibold text-slate-900">{currentUser.role}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Staff Email</span>
+                  <span className="text-slate-500">Email</span>
                   <span className="font-mono text-slate-800">{currentUser.email}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Staff ID</span>
-                  <span className="font-mono text-slate-800">ST-8842-AUTH</span>
+                  <span className="text-slate-500">User ID</span>
+                  <span className="font-mono text-slate-800">USR-8842</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Care Facility</span>
+                  <span className="text-slate-500">Facility / Unit</span>
                   <span className="font-medium text-slate-800">{currentUser.facility}</span>
-                </div>
-              </div>
-
-              <div className="p-3 bg-emerald-50 rounded border border-emerald-200 flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                <div className="text-[11px] text-emerald-800">
-                  <span className="font-bold">Safeguarding Authorization Active:</span> Certified for visual body-check review, documentation attestation, and comparison confirmation.
                 </div>
               </div>
             </div>
@@ -337,10 +326,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
                   <span className="text-emerald-700 font-mono font-bold text-[11px]">Required</span>
                 </div>
-              </div>
-
-              <div className="text-[11px] text-slate-500 italic">
-                Settings are configured per organization clinical governance policy.
               </div>
             </div>
 

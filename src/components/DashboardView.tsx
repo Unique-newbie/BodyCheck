@@ -40,12 +40,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Body Check Overview</h1>
-              <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-300">
-                Authorized Staff Portal
-              </span>
-            </div>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Body Check Overview</h1>
             <p className="mt-1 text-sm text-slate-600 max-w-2xl">
               Review and document visible changes between body-check images.
             </p>
@@ -162,7 +157,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <span className="font-medium text-slate-800">{selectedPatient.unit}</span>
             </div>
             <div>
-              <span className="text-slate-500 block">Assigned Safeguarding</span>
+              <span className="text-slate-500 block">Primary Caregiver</span>
               <span className="font-medium text-slate-800">{selectedPatient.primaryCaregiver}</span>
             </div>
             <div>

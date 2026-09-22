@@ -70,7 +70,7 @@ class BodyCheckService {
       id: `aud-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       timestamp,
       actor: reviewerName,
-      actorRole: 'Authorized Staff',
+      actorRole: 'Reviewer',
       action: 'Saved observation draft',
       details: 'Reviewer updated draft observation text.'
     };
@@ -84,7 +84,7 @@ class BodyCheckService {
     recordId: string,
     finalText: string,
     reviewerName: string = 'Sarah Mitchell',
-    reviewerRole: string = 'Authorized Staff',
+    reviewerRole: string = 'Reviewer',
     notes?: string
   ): BodyCheckRecord | undefined {
     const record = this.records.find(r => r.id === recordId);
