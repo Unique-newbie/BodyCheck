@@ -15,7 +15,8 @@ export interface SelectableRecord {
   id: string;
   name: string;
   unit?: string;
-  bodyRegion: BodyRegion;
+  availableBodyRegions: BodyRegion[];
+  defaultRegion?: BodyRegion;
   scenario?: DemoScenario;
 }
 
@@ -46,23 +47,37 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
     const map = new Map<string, SelectableRecord>();
 
     patients.forEach(p => {
-      const scenario = DEMO_SCENARIOS.find(s => s.patientRecordId === p.id);
-      const region = (scenario?.bodyRegion || p.defaultRegion || 'Other') as BodyRegion;
-      map.set(p.id, {
+      const scenario = DEMO_SCENARIOS.find(s => s.patientRecordId.toLowerCase() === p.id.toLowerCase());
+      
+      let regions: BodyRegion[] = [];
+      if (p.availableBodyRegions && p.availableBodyRegions.length > 0) {
+        regions = [...p.availableBodyRegions];
+      } else if (scenario?.bodyRegion) {
+        regions = [scenario.bodyRegion];
+      } else if (p.defaultRegion) {
+        regions = [p.defaultRegion];
+      } else {
+        regions = ['Other'];
+      }
+
+      map.set(p.id.toUpperCase(), {
         id: p.id,
         name: p.name.replace('Youth Record ', 'Record '),
         unit: p.unit,
-        bodyRegion: region,
+        availableBodyRegions: regions,
+        defaultRegion: p.defaultRegion || regions[0],
         scenario,
       });
     });
 
     DEMO_SCENARIOS.forEach(s => {
-      if (!map.has(s.patientRecordId)) {
-        map.set(s.patientRecordId, {
+      const upperId = s.patientRecordId.toUpperCase();
+      if (!map.has(upperId)) {
+        map.set(upperId, {
           id: s.patientRecordId,
           name: `Record ${s.patientRecordId}`,
-          bodyRegion: s.bodyRegion,
+          availableBodyRegions: [s.bodyRegion],
+          defaultRegion: s.bodyRegion,
           scenario: s,
         });
       }
@@ -83,7 +98,11 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
 
   // Selected Record State
   const [patientId, setPatientId] = useState<string>(initialRecord ? initialRecord.id : '');
-  const [bodyRegion, setBodyRegion] = useState<BodyRegion>(initialRecord ? initialRecord.bodyRegion : ('' as BodyRegion));
+  const [bodyRegion, setBodyRegion] = useState<BodyRegion>(() => {
+    if (!initialRecord) return '' as BodyRegion;
+    if (initialRecord.availableBodyRegions.length === 1) return initialRecord.availableBodyRegions[0];
+    return '' as BodyRegion;
+  });
   
   // Reference Image Data
   const [refImage, setRefImage] = useState<string>(initialRecord?.scenario ? initialRecord.scenario.referenceImage : '');
@@ -99,8 +118,6 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
 
   // Search & Picker State
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
-  const searchContainerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -118,22 +135,16 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
     }
   }, [initialPatientId, availableRecords]);
 
-  // Dismiss dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
-        setIsSearchOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   const handleSelectRecord = (record: SelectableRecord) => {
     setPatientId(record.id);
-    setBodyRegion(record.bodyRegion);
+    
+    // If single region, auto-select it; if multiple, require explicit selection
+    if (record.availableBodyRegions.length === 1) {
+      setBodyRegion(record.availableBodyRegions[0]);
+    } else {
+      setBodyRegion('' as BodyRegion);
+    }
+
     if (record.scenario) {
       setRefImage(record.scenario.referenceImage);
       setRefImageId(record.scenario.expectedResult.referenceImageId);
@@ -155,7 +166,8 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
     }
     setValidationError(null);
     setSearchQuery('');
-    setIsSearchOpen(false);
+    setMaxUnlockedStep(1);
+    setCurrentStep(1);
   };
 
   const handleResetRecordSelection = () => {
@@ -173,7 +185,6 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
     setMaxUnlockedStep(1);
     setCurrentStep(1);
     setSearchQuery('');
-    setIsSearchOpen(true);
     setTimeout(() => {
       searchInputRef.current?.focus();
     }, 50);
@@ -183,14 +194,11 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
     const query = searchQuery.trim().toLowerCase();
     if (!query) return availableRecords;
     return availableRecords.filter(rec => 
-      rec.id.toLowerCase().includes(query) ||
-      rec.name.toLowerCase().includes(query) ||
-      rec.bodyRegion.toLowerCase().includes(query) ||
-      (rec.unit && rec.unit.toLowerCase().includes(query))
+      rec.id.toLowerCase().includes(query)
     );
   }, [availableRecords, searchQuery]);
 
-  const selectedRecord = availableRecords.find(r => r.id === patientId);
+  const selectedRecord = availableRecords.find(r => r.id.toUpperCase() === patientId.toUpperCase());
 
   // Sequential Step Verification Gates
   const isStep1Valid = Boolean(patientId && bodyRegion);
@@ -386,56 +394,59 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
 
       {/* STEP 1: SELECT RECORD */}
       {currentStep === 1 && (
-        <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm space-y-5">
+        <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm space-y-6">
           <div className="border-b border-slate-100 pb-3">
             <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
               STEP 1 — SELECT RECORD
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              Choose an existing record to begin a body check.
+              Choose a record and body region to begin a body check.
             </p>
           </div>
 
-          {/* Searchable Picker when no record is selected */}
-          {!patientId ? (
-            <div className="space-y-3" ref={searchContainerRef}>
+          {/* Two-Column Record + Body Region Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x md:divide-slate-200 gap-6">
+            
+            {/* LEFT COLUMN: Record selection */}
+            <div className="space-y-3 md:pr-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Search records
+                  Record
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    <Search className="w-4 h-4" />
-                  </div>
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setIsSearchOpen(true);
-                      setValidationError(null);
-                    }}
-                    onFocus={() => setIsSearchOpen(true)}
-                    placeholder="Search by record ID or name..."
-                    className="w-full pl-9 pr-8 py-2.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:outline-none transition-all placeholder:text-slate-400"
-                  />
-                  {searchQuery && (
-                    <button
-                      type="button"
-                      onClick={() => setSearchQuery('')}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
 
-                  {/* Dropdown Menu */}
-                  {isSearchOpen && (
-                    <div className="absolute z-20 top-full left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-lg shadow-lg max-h-72 overflow-y-auto divide-y divide-slate-100 animate-in fade-in duration-100">
+                {!patientId ? (
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <Search className="w-4 h-4" />
+                      </div>
+                      <input
+                        ref={searchInputRef}
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                          setValidationError(null);
+                        }}
+                        placeholder="Search by record ID..."
+                        className="w-full pl-9 pr-8 py-2 bg-white border border-slate-300 rounded-md text-sm text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:outline-none transition-all"
+                      />
+                      {searchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setSearchQuery('')}
+                          className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Scalable Record Results List */}
+                    <div className="border border-slate-200 rounded-md max-h-72 overflow-y-auto divide-y divide-slate-100 bg-white shadow-2xs">
                       {filteredRecords.length === 0 ? (
                         <div className="p-4 text-center text-xs text-slate-500">
-                          No records found matching &ldquo;<span className="font-semibold text-slate-700">{searchQuery}</span>&rdquo;
+                          No records found
                         </div>
                       ) : (
                         filteredRecords.map((rec) => (
@@ -443,93 +454,119 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
                             key={rec.id}
                             type="button"
                             onClick={() => handleSelectRecord(rec)}
-                            className="w-full text-left px-4 py-3 hover:bg-sky-50 flex items-center justify-between transition-colors group cursor-pointer"
+                            className="w-full text-left p-3 hover:bg-sky-50/70 transition-colors cursor-pointer group"
                           >
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3">
-                              <span className="font-mono font-bold text-sm text-slate-900 group-hover:text-sky-900">
-                                {rec.id}
-                              </span>
-                              <span className="text-xs text-slate-600">
-                                {rec.name}
-                              </span>
-                              {rec.unit && (
-                                <span className="text-[11px] text-slate-400 truncate max-w-xs">
-                                  ({rec.unit})
-                                </span>
-                              )}
+                            <div className="font-mono font-bold text-sm text-slate-900 group-hover:text-sky-900">
+                              {rec.id}
                             </div>
-                            <div className="flex items-center gap-2 mt-1 sm:mt-0 flex-shrink-0">
-                              <span className="text-xs font-medium text-slate-700 px-2 py-0.5 bg-slate-100 rounded border border-slate-200 group-hover:bg-sky-100 group-hover:border-sky-300 group-hover:text-sky-900">
-                                {rec.bodyRegion}
+                            <div className="text-xs text-slate-500 mt-0.5">
+                              Available body regions:{' '}
+                              <span className="text-slate-700 font-medium">
+                                {rec.availableBodyRegions.join(', ')}
                               </span>
                             </div>
                           </button>
                         ))
                       )}
                     </div>
-                  )}
-                </div>
-                <p className="text-[11px] text-slate-500 mt-2">
-                  Select a record to load its associated body region and baseline documentation.
-                </p>
-              </div>
-            </div>
-          ) : (
-            /* Selected Record Card */
-            <div className="space-y-4">
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
-                  <div>
-                    <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
-                      Selected Record
-                    </span>
-                    <div className="flex items-center gap-2.5 mt-1">
-                      <span className="font-mono font-bold text-lg text-slate-900">
-                        {patientId}
-                      </span>
-                      {selectedRecord?.name && (
-                        <span className="text-xs text-slate-600 font-medium">
-                          — {selectedRecord.name}
+                  </div>
+                ) : (
+                  /* Display Selected Record Clearly */
+                  <div className="bg-slate-50 border border-slate-200 rounded-md p-4 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-base text-slate-900">
+                          {selectedRecord?.id || patientId}
                         </span>
-                      )}
-                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded border border-emerald-200">
-                        Active
+                        <span className="text-[10px] font-mono font-semibold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded border border-emerald-200">
+                          Selected
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleResetRecordSelection}
+                        className="text-xs font-semibold px-2.5 py-1 text-sky-800 hover:text-sky-950 bg-white hover:bg-sky-50 border border-slate-300 hover:border-sky-300 rounded shadow-2xs transition-colors cursor-pointer"
+                      >
+                        Change record
+                      </button>
+                    </div>
+
+                    <div className="text-xs text-slate-600">
+                      <span className="text-slate-500">Available body regions: </span>
+                      <span className="font-medium text-slate-800">
+                        {selectedRecord?.availableBodyRegions.join(', ') || bodyRegion}
                       </span>
                     </div>
-                  </div>
 
-                  <button
-                    type="button"
-                    onClick={handleResetRecordSelection}
-                    className="text-xs font-semibold px-3 py-1.5 text-sky-800 hover:text-sky-950 bg-white hover:bg-sky-50 border border-slate-300 hover:border-sky-300 rounded shadow-2xs transition-colors inline-flex items-center gap-1 self-start sm:self-center"
-                  >
-                    <span>Change record</span>
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3 pt-1">
-                  <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
-                      Body Region
-                    </label>
-                    <div className="flex items-center justify-between bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-900">
-                      <span className="font-semibold text-slate-900">{bodyRegion}</span>
-                      <span className="text-[11px] text-slate-400 font-medium">(Locked to record)</span>
-                    </div>
+                    {selectedRecord?.unit && (
+                      <div className="text-[11px] text-slate-400 truncate">
+                        {selectedRecord.unit}
+                      </div>
+                    )}
                   </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
-                      Care Unit
-                    </label>
-                    <div className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-700 truncate">
-                      {selectedRecord?.unit || 'Residential Wellbeing Unit'}
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
-          )}
+
+            {/* RIGHT COLUMN: Body Region selection */}
+            <div className="space-y-3 md:pl-6">
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                Body Region
+              </label>
+
+              {!patientId ? (
+                /* Unselected State: disabled selector + info panel */
+                <div className="space-y-3">
+                  <select
+                    disabled
+                    value=""
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-sm text-slate-400 cursor-not-allowed"
+                  >
+                    <option value="">Select a body region...</option>
+                  </select>
+
+                  <div className="bg-slate-50 border border-slate-200 rounded-md p-3 text-xs text-slate-500 space-y-1">
+                    <div className="font-semibold text-slate-700">Select a record first</div>
+                    <p>Choose a record from the left to view available body regions.</p>
+                  </div>
+                </div>
+              ) : selectedRecord && selectedRecord.availableBodyRegions.length > 1 ? (
+                /* Multiple Regions: Dropdown containing only available regions */
+                <div className="space-y-2">
+                  <select
+                    value={bodyRegion}
+                    onChange={(e) => {
+                      setBodyRegion(e.target.value as BodyRegion);
+                      setValidationError(null);
+                    }}
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:outline-none shadow-2xs"
+                  >
+                    <option value="">Select a body region...</option>
+                    {selectedRecord.availableBodyRegions.map((region) => (
+                      <option key={region} value={region}>
+                        {region}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[11px] text-slate-500">
+                    Choose from the body regions available for {selectedRecord.id}.
+                  </p>
+                </div>
+              ) : (
+                /* Single Region: Clean display showing the auto-selected region */
+                <div className="space-y-2">
+                  <div className="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 flex items-center justify-between shadow-2xs">
+                    <span className="font-semibold text-slate-900">{bodyRegion}</span>
+                    <span className="text-[11px] text-slate-400 font-normal">Auto-selected</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500">
+                    Single designated body region for {selectedRecord?.id || patientId}.
+                  </p>
+                </div>
+              )}
+            </div>
+
+          </div>
 
           {/* Step 1 Actions */}
           <div className="pt-4 flex justify-end border-t border-slate-100">

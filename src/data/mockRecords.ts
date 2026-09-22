@@ -125,12 +125,12 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
     }
   },
 
-  // 3. IF452 — Upper Back (Routine Check / No Significant Change)
+  // 3. IF452 — Back (Routine Check / No Significant Change)
   {
     id: 'scenario-if452',
-    title: 'IF452 — Upper Back (Routine Check / No Significant Change)',
+    title: 'IF452 — Back (Routine Check / No Significant Change)',
     patientRecordId: 'IF452',
-    bodyRegion: 'Upper Back',
+    bodyRegion: 'Back',
     description: 'Routine follow-up body check showing stable baseline appearance with no identified visible changes.',
     referenceDate: '2026-09-08 16:20',
     newImageDate: '2026-09-21 15:00',
@@ -141,19 +141,19 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
       referenceDate: '2026-09-08 16:20',
       newImageId: 'IF452-REV-01',
       newImageDate: '2026-09-21 15:00',
-      bodyRegion: 'Upper Back',
+      bodyRegion: 'Back',
       changeType: 'No Significant Visible Change',
       finding: 'No significant visible change identified',
       confidence: 'High',
       confidenceScore: 0.94,
       candidateFinding: {
-        bodyRegion: 'Upper Back',
+        bodyRegion: 'Back',
         changeType: 'No Significant Visible Change',
         finding: 'No significant visible change identified',
         confidence: 'High',
         confidenceScore: 0.94
       },
-      aiObservation: 'Reviewing the new picture against reference image IF452, no significant visible change or new focal discoloration identified across the upper thoracic dorsal region.'
+      aiObservation: 'Reviewing the new picture against reference image IF452, no significant visible change or new focal discoloration identified across the dorsal region.'
     }
   },
 
@@ -358,7 +358,8 @@ export const MOCK_PATIENTS: PatientRecord[] = [
     primaryCaregiver: 'Case Officer Miller',
     lastCheckDate: '2026-09-14 09:30',
     activeStatus: 'active',
-    defaultRegion: 'Left Shoulder'
+    defaultRegion: 'Left Shoulder',
+    availableBodyRegions: ['Left Shoulder']
   },
   {
     id: 'IF455',
@@ -368,7 +369,8 @@ export const MOCK_PATIENTS: PatientRecord[] = [
     primaryCaregiver: 'Sarah Mitchell, Reviewer',
     lastCheckDate: '2026-09-10 11:00',
     activeStatus: 'active',
-    defaultRegion: 'Right Forearm'
+    defaultRegion: 'Right Forearm',
+    availableBodyRegions: ['Right Forearm']
   },
   {
     id: 'IF452',
@@ -378,7 +380,8 @@ export const MOCK_PATIENTS: PatientRecord[] = [
     primaryCaregiver: 'Case Worker D. Chen',
     lastCheckDate: '2026-09-08 16:20',
     activeStatus: 'active',
-    defaultRegion: 'Upper Back'
+    defaultRegion: 'Back',
+    availableBodyRegions: ['Back']
   },
   {
     id: 'IF439',
@@ -388,7 +391,8 @@ export const MOCK_PATIENTS: PatientRecord[] = [
     primaryCaregiver: 'Care Worker T. Harris',
     lastCheckDate: '2026-09-12 13:10',
     activeStatus: 'active',
-    defaultRegion: 'Right Lower Leg'
+    defaultRegion: 'Right Lower Leg',
+    availableBodyRegions: ['Right Lower Leg']
   },
   {
     id: 'IF461',
@@ -398,7 +402,8 @@ export const MOCK_PATIENTS: PatientRecord[] = [
     primaryCaregiver: 'Sarah Mitchell, Reviewer',
     lastCheckDate: '2026-09-11 14:00',
     activeStatus: 'active',
-    defaultRegion: 'Right Shoulder'
+    defaultRegion: 'Right Shoulder',
+    availableBodyRegions: ['Right Shoulder']
   },
   {
     id: 'IF468',
@@ -408,7 +413,8 @@ export const MOCK_PATIENTS: PatientRecord[] = [
     primaryCaregiver: 'Senior Practitioner O. Bailey',
     lastCheckDate: '2026-09-13 10:30',
     activeStatus: 'active',
-    defaultRegion: 'Left Upper Arm'
+    defaultRegion: 'Left Upper Arm',
+    availableBodyRegions: ['Left Upper Arm']
   },
   {
     id: 'IF472',
@@ -418,7 +424,8 @@ export const MOCK_PATIENTS: PatientRecord[] = [
     primaryCaregiver: 'Case Worker J. Patel',
     lastCheckDate: '2026-09-09 09:15',
     activeStatus: 'active',
-    defaultRegion: 'Lower Back'
+    defaultRegion: 'Lower Back',
+    availableBodyRegions: ['Lower Back']
   },
   {
     id: 'IF477',
@@ -428,7 +435,19 @@ export const MOCK_PATIENTS: PatientRecord[] = [
     primaryCaregiver: 'Case Officer Miller',
     lastCheckDate: '2026-09-15 11:45',
     activeStatus: 'active',
-    defaultRegion: 'Right Knee'
+    defaultRegion: 'Right Knee',
+    availableBodyRegions: ['Right Knee']
+  },
+  {
+    id: 'IF500',
+    name: 'Record IF-500',
+    unit: 'Multi-Region Care Unit',
+    dateOfBirth: '2009-05-18',
+    primaryCaregiver: 'Sarah Mitchell, Reviewer',
+    lastCheckDate: '2026-09-16 10:00',
+    activeStatus: 'active',
+    defaultRegion: 'Left Shoulder',
+    availableBodyRegions: ['Left Shoulder', 'Right Forearm', 'Upper Back']
   }
 ];
 
@@ -586,7 +605,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
     ]
   },
 
-  // 3. Confirmed Routine Check: IF452 (Upper Back, No change)
+  // 3. Confirmed Routine Check: IF452 (Back, No change)
   {
     id: 'BC-2026-0872',
     patientRecordId: 'IF452',
@@ -597,20 +616,20 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
     newImage: DEMO_ASSETS.if452.review,
     newImageId: 'IF452-REV-01',
     newImageDate: '2026-09-21 15:00',
-    bodyRegion: 'Upper Back',
+    bodyRegion: 'Back',
     changeType: 'No Significant Visible Change',
     finding: 'No significant visible change identified',
     confidence: 'High',
     confidenceScore: 0.94,
     candidateFinding: {
-      bodyRegion: 'Upper Back',
+      bodyRegion: 'Back',
       changeType: 'No Significant Visible Change',
       finding: 'No significant visible change identified',
       confidence: 'High',
       confidenceScore: 0.94
     },
-    aiObservation: 'Reviewing the new picture against reference image IF452, no significant visible change or new focal discoloration identified across the upper thoracic dorsal region.',
-    finalObservation: 'Reviewing the new picture against reference image IF452, no significant visible change or new focal discoloration identified across the upper thoracic dorsal region. Normal presentation.',
+    aiObservation: 'Reviewing the new picture against reference image IF452, no significant visible change or new focal discoloration identified across the dorsal region.',
+    finalObservation: 'Reviewing the new picture against reference image IF452, no significant visible change or new focal discoloration identified across the dorsal region. Normal presentation.',
     status: 'confirmed',
     reviewer: 'Dr. Marcus Vance',
     reviewerRole: 'Consulting Physician',
@@ -639,7 +658,7 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
         actor: 'Case Worker D. Chen',
         actorRole: 'Reviewer',
         action: 'Review check initiated',
-        details: 'New review image IF452-REV-01 registered for Upper Back.'
+        details: 'New review image IF452-REV-01 registered for Back.'
       },
       {
         id: 'aud-872-1',

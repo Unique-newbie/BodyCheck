@@ -110,6 +110,7 @@ export interface PatientRecord {
   lastCheckDate?: string;
   activeStatus: 'active' | 'archived';
   defaultRegion?: BodyRegion;
+  availableBodyRegions?: BodyRegion[];
 }
 
 export interface AnalysisResult {
