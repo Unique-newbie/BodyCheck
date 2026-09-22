@@ -1,14 +1,23 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { BodyRegion, PatientRecord } from '../types/bodyCheck';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { BodyRegion, PatientRecord, DemoScenario } from '../types/bodyCheck';
 import { DEMO_SCENARIOS } from '../data/mockRecords';
 import { 
-  Layers, 
   Upload, 
   AlertCircle, 
   ArrowRight, 
   ArrowLeft, 
-  CheckCircle2
+  CheckCircle2,
+  Search,
+  X
 } from 'lucide-react';
+
+export interface SelectableRecord {
+  id: string;
+  name: string;
+  unit?: string;
+  bodyRegion: BodyRegion;
+  scenario?: DemoScenario;
+}
 
 interface NewCheckViewProps {
   patients: PatientRecord[];
@@ -26,83 +35,174 @@ interface NewCheckViewProps {
   onCancel: () => void;
 }
 
-const CONTROLLED_BODY_REGIONS: BodyRegion[] = [
-  'Left Shoulder',
-  'Right Shoulder',
-  'Left Upper Arm',
-  'Right Upper Arm',
-  'Left Forearm',
-  'Right Forearm',
-  'Chest',
-  'Abdomen',
-  'Back',
-  'Left Thigh',
-  'Right Thigh',
-  'Left Lower Leg',
-  'Right Lower Leg'
-];
-
-const SELECTABLE_QUICK_RECORDS = [
-  { id: 'IF456', region: 'Left Shoulder', isPrimary: true },
-  { id: 'IF455', region: 'Right Forearm', isPrimary: false },
-  { id: 'IF452', region: 'Back', isPrimary: false },
-  { id: 'IF439', region: 'Right Lower Leg', isPrimary: false },
-];
-
 export const NewCheckView: React.FC<NewCheckViewProps> = ({
   patients,
-  initialPatientId = 'IF456',
+  initialPatientId,
   onAnalyze,
   onCancel
 }) => {
+  // Dynamically derive available records from patients and scenarios (scalable to hundreds of records)
+  const availableRecords = useMemo<SelectableRecord[]>(() => {
+    const map = new Map<string, SelectableRecord>();
+
+    patients.forEach(p => {
+      const scenario = DEMO_SCENARIOS.find(s => s.patientRecordId === p.id);
+      const region = (scenario?.bodyRegion || p.defaultRegion || 'Other') as BodyRegion;
+      map.set(p.id, {
+        id: p.id,
+        name: p.name.replace('Youth Record ', 'Record '),
+        unit: p.unit,
+        bodyRegion: region,
+        scenario,
+      });
+    });
+
+    DEMO_SCENARIOS.forEach(s => {
+      if (!map.has(s.patientRecordId)) {
+        map.set(s.patientRecordId, {
+          id: s.patientRecordId,
+          name: `Record ${s.patientRecordId}`,
+          bodyRegion: s.bodyRegion,
+          scenario: s,
+        });
+      }
+    });
+
+    return Array.from(map.values());
+  }, [patients]);
+
+  const initialRecord = useMemo(() => {
+    if (!initialPatientId) return undefined;
+    return availableRecords.find(r => r.id.toLowerCase() === initialPatientId.toLowerCase());
+  }, [initialPatientId, availableRecords]);
+
   // Current active step (1 to 4)
   const [currentStep, setCurrentStep] = useState<number>(1);
+  // Furthest step reached / unlocked (1 to 4)
+  const [maxUnlockedStep, setMaxUnlockedStep] = useState<number>(1);
 
-  // Scenario initialization: Default to primary IF456 scenario
-  const primaryScenario = DEMO_SCENARIOS[0];
-
-  const [patientId, setPatientId] = useState<string>(initialPatientId);
-  const [bodyRegion, setBodyRegion] = useState<BodyRegion>(primaryScenario.bodyRegion);
+  // Selected Record State
+  const [patientId, setPatientId] = useState<string>(initialRecord ? initialRecord.id : '');
+  const [bodyRegion, setBodyRegion] = useState<BodyRegion>(initialRecord ? initialRecord.bodyRegion : ('' as BodyRegion));
   
   // Reference Image Data
-  const [refImage, setRefImage] = useState<string>(primaryScenario.referenceImage);
-  const [refImageId, setRefImageId] = useState<string>(primaryScenario.expectedResult.referenceImageId);
-  const [refDate, setRefDate] = useState<string>(primaryScenario.referenceDate);
-  const [refFileName, setRefFileName] = useState<string>('if456-shoulder-ref.jpg');
+  const [refImage, setRefImage] = useState<string>(initialRecord?.scenario ? initialRecord.scenario.referenceImage : '');
+  const [refImageId, setRefImageId] = useState<string>(initialRecord?.scenario ? initialRecord.scenario.expectedResult.referenceImageId : '');
+  const [refDate, setRefDate] = useState<string>(initialRecord?.scenario ? initialRecord.scenario.referenceDate : '');
+  const [refFileName, setRefFileName] = useState<string>(initialRecord ? `${initialRecord.id.toLowerCase()}-baseline.jpg` : '');
   
   // New Image Data
-  const [newImage, setNewImage] = useState<string>(primaryScenario.newImage);
-  const [newImageId, setNewImageId] = useState<string>(primaryScenario.expectedResult.newImageId);
-  const [newDate, setNewDate] = useState<string>(primaryScenario.newImageDate);
-  const [newFileName, setNewFileName] = useState<string>('if456-shoulder-review.jpg');
+  const [newImage, setNewImage] = useState<string>(initialRecord?.scenario ? initialRecord.scenario.newImage : '');
+  const [newImageId, setNewImageId] = useState<string>(initialRecord?.scenario ? initialRecord.scenario.expectedResult.newImageId : '');
+  const [newDate, setNewDate] = useState<string>(initialRecord?.scenario ? initialRecord.scenario.newImageDate : '');
+  const [newFileName, setNewFileName] = useState<string>(initialRecord ? `${initialRecord.id.toLowerCase()}-review.jpg` : '');
+
+  // Search & Picker State
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const refFileInputRef = useRef<HTMLInputElement>(null);
   const newFileInputRef = useRef<HTMLInputElement>(null);
 
+  // Sync when initialPatientId changes
   useEffect(() => {
     if (initialPatientId) {
-      setPatientId(initialPatientId);
-      const match = DEMO_SCENARIOS.find(s => s.patientRecordId === initialPatientId);
+      const match = availableRecords.find(r => r.id.toLowerCase() === initialPatientId.toLowerCase());
       if (match) {
-        loadScenario(match);
+        handleSelectRecord(match);
       }
     }
-  }, [initialPatientId]);
+  }, [initialPatientId, availableRecords]);
 
-  const loadScenario = (scenario: typeof DEMO_SCENARIOS[0]) => {
-    setPatientId(scenario.patientRecordId);
-    setBodyRegion(scenario.bodyRegion);
-    setRefImage(scenario.referenceImage);
-    setRefImageId(scenario.expectedResult.referenceImageId);
-    setRefDate(scenario.referenceDate);
-    setRefFileName(`${scenario.patientRecordId.toLowerCase()}-baseline.jpg`);
-    setNewImage(scenario.newImage);
-    setNewImageId(scenario.expectedResult.newImageId);
-    setNewDate(scenario.newImageDate);
-    setNewFileName(`${scenario.patientRecordId.toLowerCase()}-review.jpg`);
+  // Dismiss dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setIsSearchOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleSelectRecord = (record: SelectableRecord) => {
+    setPatientId(record.id);
+    setBodyRegion(record.bodyRegion);
+    if (record.scenario) {
+      setRefImage(record.scenario.referenceImage);
+      setRefImageId(record.scenario.expectedResult.referenceImageId);
+      setRefDate(record.scenario.referenceDate);
+      setRefFileName(`${record.id.toLowerCase()}-baseline.jpg`);
+      setNewImage(record.scenario.newImage);
+      setNewImageId(record.scenario.expectedResult.newImageId);
+      setNewDate(record.scenario.newImageDate);
+      setNewFileName(`${record.id.toLowerCase()}-review.jpg`);
+    } else {
+      setRefImage('');
+      setRefImageId('');
+      setRefDate('');
+      setRefFileName('');
+      setNewImage('');
+      setNewImageId('');
+      setNewDate('');
+      setNewFileName('');
+    }
     setValidationError(null);
+    setSearchQuery('');
+    setIsSearchOpen(false);
+  };
+
+  const handleResetRecordSelection = () => {
+    setPatientId('');
+    setBodyRegion('' as BodyRegion);
+    setRefImage('');
+    setRefImageId('');
+    setRefDate('');
+    setRefFileName('');
+    setNewImage('');
+    setNewImageId('');
+    setNewDate('');
+    setNewFileName('');
+    setValidationError(null);
+    setMaxUnlockedStep(1);
+    setCurrentStep(1);
+    setSearchQuery('');
+    setIsSearchOpen(true);
+    setTimeout(() => {
+      searchInputRef.current?.focus();
+    }, 50);
+  };
+
+  const filteredRecords = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return availableRecords;
+    return availableRecords.filter(rec => 
+      rec.id.toLowerCase().includes(query) ||
+      rec.name.toLowerCase().includes(query) ||
+      rec.bodyRegion.toLowerCase().includes(query) ||
+      (rec.unit && rec.unit.toLowerCase().includes(query))
+    );
+  }, [availableRecords, searchQuery]);
+
+  const selectedRecord = availableRecords.find(r => r.id === patientId);
+
+  // Sequential Step Verification Gates
+  const isStep1Valid = Boolean(patientId && bodyRegion);
+  const isStep2Valid = Boolean(isStep1Valid && refImage && refImageId);
+  const isStep3Valid = Boolean(isStep2Valid && newImage && newImageId);
+
+  const isStepAccessible = (stepNum: number): boolean => {
+    if (stepNum === 1) return true;
+    if (stepNum === 2) return maxUnlockedStep >= 2 && isStep1Valid;
+    if (stepNum === 3) return maxUnlockedStep >= 3 && isStep2Valid;
+    if (stepNum === 4) return maxUnlockedStep >= 4 && isStep3Valid;
+    return false;
   };
 
   const handleFileUpload = (
@@ -138,12 +238,12 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
 
       if (target === 'reference') {
         setRefImage(result);
-        setRefImageId(`REF-${patientId}`);
+        setRefImageId(`REF-${patientId || 'RECORD'}`);
         setRefFileName(file.name);
         setRefDate(nowStr);
       } else {
         setNewImage(result);
-        setNewImageId(`NEW-${patientId}`);
+        setNewImageId(`NEW-${patientId || 'RECORD'}`);
         setNewFileName(file.name);
         setNewDate(nowStr);
       }
@@ -155,22 +255,25 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
   const handleNextStep = () => {
     setValidationError(null);
     if (currentStep === 1) {
-      if (!patientId) {
-        setValidationError('Please select a valid record.');
+      if (!patientId || !bodyRegion) {
+        setValidationError('Please select a valid record to continue.');
         return;
       }
+      setMaxUnlockedStep(prev => Math.max(prev, 2));
       setCurrentStep(2);
     } else if (currentStep === 2) {
-      if (!refImage) {
+      if (!refImage || !refImageId) {
         setValidationError('Please select or upload a baseline reference photograph.');
         return;
       }
+      setMaxUnlockedStep(prev => Math.max(prev, 3));
       setCurrentStep(3);
     } else if (currentStep === 3) {
-      if (!newImage) {
+      if (!newImage || !newImageId) {
         setValidationError('Please select or upload a new review photograph.');
         return;
       }
+      setMaxUnlockedStep(prev => Math.max(prev, 4));
       setCurrentStep(4);
     }
   };
@@ -217,7 +320,7 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
           </div>
         </div>
 
-        {/* Simple Step Indicator: 1 Record → 2 Reference Image → 3 Review Image → 4 Compare */}
+        {/* Guarded Step Indicator: 1 Record → 2 Reference Image → 3 Review Image → 4 Compare */}
         <div className="mt-4 pt-3 border-t border-slate-100">
           <div className="flex items-center justify-between text-xs overflow-x-auto gap-2 py-1">
             {[
@@ -225,75 +328,51 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
               { num: 2, title: 'Reference Image' },
               { num: 3, title: 'Review Image' },
               { num: 4, title: 'Compare' }
-            ].map((step, idx, arr) => (
-              <React.Fragment key={step.num}>
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep(step.num)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded transition-colors text-xs font-medium ${
-                    currentStep === step.num
-                      ? 'bg-sky-50 text-sky-900 font-semibold border border-sky-300'
-                      : currentStep > step.num
-                      ? 'text-slate-700 hover:bg-slate-50 font-medium'
-                      : 'text-slate-400 hover:bg-slate-50'
-                  }`}
-                >
-                  <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-mono ${
-                    currentStep === step.num
-                      ? 'bg-sky-700 text-white'
-                      : currentStep > step.num
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-slate-200 text-slate-600'
-                  }`}>
-                    {currentStep > step.num ? '✓' : step.num}
-                  </span>
-                  <span>{step.num} {step.title}</span>
-                </button>
-                {idx < arr.length - 1 && (
-                  <span className="text-slate-300 select-none font-bold">→</span>
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-      </div>
+            ].map((step, idx, arr) => {
+              const isCurrent = currentStep === step.num;
+              const isAccessible = isStepAccessible(step.num);
+              const isCompleted = isAccessible && currentStep > step.num;
 
-      {/* Select a Record */}
-      <div className="bg-white border border-slate-200 rounded-lg p-3.5 text-xs shadow-sm">
-        <div className="flex items-center justify-between mb-2.5">
-          <span className="font-semibold text-slate-800 flex items-center gap-1.5">
-            <Layers className="w-3.5 h-3.5 text-slate-600" />
-            <span>Select a record</span>
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          {SELECTABLE_QUICK_RECORDS.map(rec => {
-            const scenario = DEMO_SCENARIOS.find(s => s.patientRecordId === rec.id);
-            const isSelected = patientId === rec.id;
-            return (
-              <button
-                key={rec.id}
-                type="button"
-                onClick={() => {
-                  if (scenario) loadScenario(scenario);
-                }}
-                className={`text-left p-3 rounded-md border text-xs transition-colors ${
-                  isSelected
-                    ? 'bg-sky-50 border-sky-400 text-sky-950 font-semibold'
-                    : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700'
-                }`}
-              >
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-mono font-bold text-slate-900 text-sm">{rec.id}</span>
-                  {rec.isPrimary && (
-                    <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 bg-slate-900 text-white rounded font-medium">Primary</span>
+              return (
+                <React.Fragment key={step.num}>
+                  <button
+                    type="button"
+                    disabled={!isAccessible}
+                    onClick={() => {
+                      if (isAccessible) {
+                        setValidationError(null);
+                        setCurrentStep(step.num);
+                      }
+                    }}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded transition-colors text-xs font-medium ${
+                      isCurrent
+                        ? 'bg-sky-50 text-sky-900 font-semibold border border-sky-300 ring-1 ring-sky-200'
+                        : isAccessible
+                        ? 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 cursor-pointer'
+                        : 'text-slate-400 opacity-40 cursor-not-allowed'
+                    }`}
+                    title={!isAccessible ? `Complete earlier steps to unlock Step ${step.num}` : undefined}
+                  >
+                    <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-mono font-bold ${
+                      isCurrent
+                        ? 'bg-sky-700 text-white'
+                        : isCompleted
+                        ? 'bg-emerald-600 text-white'
+                        : isAccessible
+                        ? 'bg-slate-200 text-slate-700'
+                        : 'bg-slate-100 text-slate-400'
+                    }`}>
+                      {isCompleted ? '✓' : step.num}
+                    </span>
+                    <span>{step.num} {step.title}</span>
+                  </button>
+                  {idx < arr.length - 1 && (
+                    <span className="text-slate-300 select-none font-bold">→</span>
                   )}
-                </div>
-                <div className="text-xs text-slate-600 font-medium">{rec.region}</div>
-              </button>
-            );
-          })}
+                </React.Fragment>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -307,7 +386,7 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
 
       {/* STEP 1: SELECT RECORD */}
       {currentStep === 1 && (
-        <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm space-y-4">
+        <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm space-y-5">
           <div className="border-b border-slate-100 pb-3">
             <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
               STEP 1 — SELECT RECORD
@@ -317,49 +396,152 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">
-                Record
-              </label>
-              <select
-                value={patientId}
-                onChange={(e) => {
-                  setPatientId(e.target.value);
-                  const match = DEMO_SCENARIOS.find(s => s.patientRecordId === e.target.value);
-                  if (match) loadScenario(match);
-                }}
-                className="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-sm font-mono font-medium text-slate-900 focus:ring-1 focus:ring-sky-500"
-              >
-                {patients.map(p => (
-                  <option key={p.id} value={p.id}>
-                    {p.id} — {p.name.replace('Youth Record ', 'Record ')}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Searchable Picker when no record is selected */}
+          {!patientId ? (
+            <div className="space-y-3" ref={searchContainerRef}>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  Search records
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <Search className="w-4 h-4" />
+                  </div>
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setIsSearchOpen(true);
+                      setValidationError(null);
+                    }}
+                    onFocus={() => setIsSearchOpen(true)}
+                    placeholder="Search by record ID or name..."
+                    className="w-full pl-9 pr-8 py-2.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:outline-none transition-all placeholder:text-slate-400"
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
 
-            <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">
-                Controlled Body Region
-              </label>
-              <select
-                value={bodyRegion}
-                onChange={(e) => setBodyRegion(e.target.value as BodyRegion)}
-                className="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-sm font-medium text-slate-900 focus:ring-1 focus:ring-sky-500"
-              >
-                {CONTROLLED_BODY_REGIONS.map(reg => (
-                  <option key={reg} value={reg}>{reg}</option>
-                ))}
-              </select>
+                  {/* Dropdown Menu */}
+                  {isSearchOpen && (
+                    <div className="absolute z-20 top-full left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-lg shadow-lg max-h-72 overflow-y-auto divide-y divide-slate-100 animate-in fade-in duration-100">
+                      {filteredRecords.length === 0 ? (
+                        <div className="p-4 text-center text-xs text-slate-500">
+                          No records found matching &ldquo;<span className="font-semibold text-slate-700">{searchQuery}</span>&rdquo;
+                        </div>
+                      ) : (
+                        filteredRecords.map((rec) => (
+                          <button
+                            key={rec.id}
+                            type="button"
+                            onClick={() => handleSelectRecord(rec)}
+                            className="w-full text-left px-4 py-3 hover:bg-sky-50 flex items-center justify-between transition-colors group cursor-pointer"
+                          >
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3">
+                              <span className="font-mono font-bold text-sm text-slate-900 group-hover:text-sky-900">
+                                {rec.id}
+                              </span>
+                              <span className="text-xs text-slate-600">
+                                {rec.name}
+                              </span>
+                              {rec.unit && (
+                                <span className="text-[11px] text-slate-400 truncate max-w-xs">
+                                  ({rec.unit})
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 mt-1 sm:mt-0 flex-shrink-0">
+                              <span className="text-xs font-medium text-slate-700 px-2 py-0.5 bg-slate-100 rounded border border-slate-200 group-hover:bg-sky-100 group-hover:border-sky-300 group-hover:text-sky-900">
+                                {rec.bodyRegion}
+                              </span>
+                            </div>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+                <p className="text-[11px] text-slate-500 mt-2">
+                  Select a record to load its associated body region and baseline documentation.
+                </p>
+              </div>
             </div>
-          </div>
+          ) : (
+            /* Selected Record Card */
+            <div className="space-y-4">
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+                  <div>
+                    <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
+                      Selected Record
+                    </span>
+                    <div className="flex items-center gap-2.5 mt-1">
+                      <span className="font-mono font-bold text-lg text-slate-900">
+                        {patientId}
+                      </span>
+                      {selectedRecord?.name && (
+                        <span className="text-xs text-slate-600 font-medium">
+                          — {selectedRecord.name}
+                        </span>
+                      )}
+                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded border border-emerald-200">
+                        Active
+                      </span>
+                    </div>
+                  </div>
 
-          <div className="pt-4 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleResetRecordSelection}
+                    className="text-xs font-semibold px-3 py-1.5 text-sky-800 hover:text-sky-950 bg-white hover:bg-sky-50 border border-slate-300 hover:border-sky-300 rounded shadow-2xs transition-colors inline-flex items-center gap-1 self-start sm:self-center"
+                  >
+                    <span>Change record</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3 pt-1">
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                      Body Region
+                    </label>
+                    <div className="flex items-center justify-between bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-900">
+                      <span className="font-semibold text-slate-900">{bodyRegion}</span>
+                      <span className="text-[11px] text-slate-400 font-medium">(Locked to record)</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                      Care Unit
+                    </label>
+                    <div className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-700 truncate">
+                      {selectedRecord?.unit || 'Residential Wellbeing Unit'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 1 Actions */}
+          <div className="pt-4 flex justify-end border-t border-slate-100">
             <button
               type="button"
               onClick={handleNextStep}
-              className="px-4 py-2 bg-sky-700 hover:bg-sky-800 text-white text-xs font-semibold rounded shadow-sm flex items-center gap-1.5"
+              disabled={!patientId || !bodyRegion}
+              className={`px-4 py-2 text-xs font-semibold rounded shadow-sm flex items-center gap-1.5 transition-colors ${
+                patientId && bodyRegion
+                  ? 'bg-sky-700 hover:bg-sky-800 text-white cursor-pointer'
+                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+              }`}
             >
               <span>Continue to Step 2 (Reference Image)</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -437,8 +619,11 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
           <div className="pt-4 flex justify-between border-t border-slate-100">
             <button
               type="button"
-              onClick={() => setCurrentStep(1)}
-              className="px-3 py-1.5 border border-slate-300 text-slate-600 rounded text-xs font-medium flex items-center gap-1"
+              onClick={() => {
+                setValidationError(null);
+                setCurrentStep(1);
+              }}
+              className="px-3 py-1.5 border border-slate-300 text-slate-600 rounded text-xs font-medium flex items-center gap-1 hover:bg-slate-50"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Step 1 (Record)</span>
@@ -524,8 +709,11 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
           <div className="pt-4 flex justify-between border-t border-slate-100">
             <button
               type="button"
-              onClick={() => setCurrentStep(2)}
-              className="px-3 py-1.5 border border-slate-300 text-slate-600 rounded text-xs font-medium flex items-center gap-1"
+              onClick={() => {
+                setValidationError(null);
+                setCurrentStep(2);
+              }}
+              className="px-3 py-1.5 border border-slate-300 text-slate-600 rounded text-xs font-medium flex items-center gap-1 hover:bg-slate-50"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Step 2 (Reference Image)</span>
@@ -616,8 +804,11 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
             <div className="mt-6 pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
               <button
                 type="button"
-                onClick={() => setCurrentStep(3)}
-                className="px-3 py-1.5 border border-slate-300 text-slate-600 rounded text-xs font-medium flex items-center gap-1"
+                onClick={() => {
+                  setValidationError(null);
+                  setCurrentStep(3);
+                }}
+                className="px-3 py-1.5 border border-slate-300 text-slate-600 rounded text-xs font-medium flex items-center gap-1 hover:bg-slate-50"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back to Step 3 (Review Image)</span>

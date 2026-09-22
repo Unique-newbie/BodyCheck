@@ -70,7 +70,7 @@ export const App: React.FC = () => {
   });
 
   const [patients] = useState<PatientRecord[]>(MOCK_PATIENTS);
-  const [selectedPatientId, setSelectedPatientId] = useState<string>('IF456');
+  const [selectedPatientId, setSelectedPatientId] = useState<string | undefined>(undefined);
   const [selectedRecordForDetail, setSelectedRecordForDetail] = useState<BodyCheckRecord | null>(null);
 
   // Active Comparison / Analysis Flow State
@@ -115,9 +115,7 @@ export const App: React.FC = () => {
 
   // Handler to start new check from dashboard or history
   const handleStartNewCheck = (patientId?: string) => {
-    if (patientId) {
-      setSelectedPatientId(patientId);
-    }
+    setSelectedPatientId(patientId);
     setCurrentTab('new-check');
   };
 
@@ -205,7 +203,12 @@ export const App: React.FC = () => {
       {/* Top Navigation */}
       <Navbar
         currentTab={currentTab}
-        onNavigate={(tab) => setCurrentTab(tab)}
+        onNavigate={(tab) => {
+          if (tab === 'new-check') {
+            setSelectedPatientId(undefined);
+          }
+          setCurrentTab(tab);
+        }}
         onResetData={handleResetData}
         totalChecksCount={records.length}
         pendingChecksCount={pendingCount}
@@ -230,7 +233,10 @@ export const App: React.FC = () => {
             patients={patients}
             initialPatientId={selectedPatientId}
             onAnalyze={handleAnalyze}
-            onCancel={() => setCurrentTab('dashboard')}
+            onCancel={() => {
+              setSelectedPatientId(undefined);
+              setCurrentTab('dashboard');
+            }}
           />
         )}
 
