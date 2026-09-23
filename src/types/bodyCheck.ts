@@ -18,9 +18,19 @@ export type BodyRegion =
   | 'Right Thigh'
   | 'Left Lower Leg'
   | 'Right Lower Leg'
+  | 'Foot'
+  | 'Upper Arm'
+  | 'Lower Leg'
   | 'Other';
 
 export type ChangeType = 
+  | 'Visible color change / contusion-like discoloration'
+  | 'Superficial skin-surface change'
+  | 'Localized swelling/contour change'
+  | 'Localized erythema / skin appearance change'
+  | 'Superficial linear skin change'
+  | 'Localized skin-color variation'
+  | 'No significant visible change'
   | 'Color / Skin Appearance Change'
   | 'Visible Bruising-like Appearance'
   | 'Tissue / Skin Appearance Difference'
@@ -28,6 +38,9 @@ export type ChangeType =
   | 'No Significant Visible Change';
 
 export type CheckStatus = 
+  | 'not_analyzed'
+  | 'ready_to_analyze'
+  | 'processing'
   | 'ready_for_review'
   | 'ai_draft_ready'
   | 'human_review'
@@ -66,21 +79,21 @@ export interface BodyCheckRecord {
   referenceDate: string;
   
   // New / Review Image
-  newImage: string;
-  newImageId: string;
-  newImageDate: string;
+  newImage?: string;
+  newImageId?: string;
+  newImageDate?: string;
   
   // Body Region & Findings
   bodyRegion: BodyRegion;
-  changeType: ChangeType;
-  finding: string;
-  confidence: ConfidenceLevel;
+  changeType?: ChangeType;
+  finding?: string;
+  confidence?: ConfidenceLevel;
   confidenceScore?: number;
   candidateFinding?: CandidateFinding;
   
   // Observations
-  aiObservation: string; // Initial AI draft
-  finalObservation: string; // Reviewer-edited or confirmed observation
+  aiObservation?: string; // Initial AI draft
+  finalObservation?: string; // Reviewer-edited or confirmed observation
   draftSavedAt?: string;
   
   // Human Review Status & Governance
@@ -89,6 +102,8 @@ export interface BodyCheckRecord {
   reviewerRole?: string; // e.g. "Reviewer"
   confirmedAt?: string;
   reviewerNotes?: string;
+  updatedAt?: string; // Latest activity timestamp for sorting recent activity
+  createdAt?: string;
   
   // Visual Reticle Coordinates
   changeCoordinates?: {
@@ -111,6 +126,8 @@ export interface PatientRecord {
   activeStatus: 'active' | 'archived';
   defaultRegion?: BodyRegion;
   availableBodyRegions?: BodyRegion[];
+  referenceImage?: string;
+  reviewImage?: string;
 }
 
 export interface AnalysisResult {
@@ -132,11 +149,17 @@ export interface AnalysisResult {
   };
 }
 
+export type ImageType = 'abnormal finding' | 'normal / unchanged';
+
 export interface DemoScenario {
   id: string;
   title: string;
   patientRecordId: string;
   bodyRegion: BodyRegion;
+  refSourceId?: string;
+  reviewDescription?: string;
+  imageType?: ImageType;
+  isNew?: boolean;
   description: string;
   referenceDate: string;
   newImageDate: string;

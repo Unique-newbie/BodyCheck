@@ -1,14 +1,16 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { BodyRegion, PatientRecord, DemoScenario } from '../types/bodyCheck';
-import { DEMO_SCENARIOS } from '../data/mockRecords';
+import { DEMO_SCENARIOS, GalleryImageAsset } from '../data/mockRecords';
+import { ReviewImageGalleryModal } from './ReviewImageGalleryModal';
 import { 
   Upload, 
   AlertCircle, 
   ArrowRight, 
   ArrowLeft, 
-  CheckCircle2,
-  Search,
-  X
+  CheckCircle2, 
+  Search, 
+  X,
+  Image as ImageIcon
 } from 'lucide-react';
 
 export interface SelectableRecord {
@@ -17,6 +19,8 @@ export interface SelectableRecord {
   unit?: string;
   availableBodyRegions: BodyRegion[];
   defaultRegion?: BodyRegion;
+  referenceImage?: string;
+  reviewImage?: string;
   scenario?: DemoScenario;
 }
 
@@ -33,6 +37,16 @@ interface NewCheckViewProps {
     newImageDate: string;
     bodyRegion: BodyRegion;
   }) => void;
+  onSaveReadyToAnalyze?: (params: {
+    patientRecordId: string;
+    referenceImage: string;
+    referenceImageId: string;
+    referenceDate: string;
+    newImage: string;
+    newImageId: string;
+    newImageDate: string;
+    bodyRegion: BodyRegion;
+  }) => void;
   onCancel: () => void;
 }
 
@@ -40,6 +54,7 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
   patients,
   initialPatientId,
   onAnalyze,
+  onSaveReadyToAnalyze,
   onCancel
 }) => {
   // Dynamically derive available records from patients and scenarios (scalable to hundreds of records)
@@ -66,6 +81,8 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
         unit: p.unit,
         availableBodyRegions: regions,
         defaultRegion: p.defaultRegion || regions[0],
+        referenceImage: p.referenceImage || scenario?.referenceImage,
+        reviewImage: p.reviewImage || scenario?.newImage,
         scenario,
       });
     });
@@ -78,6 +95,8 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
           name: `Record ${s.patientRecordId}`,
           availableBodyRegions: [s.bodyRegion],
           defaultRegion: s.bodyRegion,
+          referenceImage: s.referenceImage,
+          reviewImage: s.newImage,
           scenario: s,
         });
       }
@@ -105,16 +124,49 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
   });
   
   // Reference Image Data
-  const [refImage, setRefImage] = useState<string>(initialRecord?.scenario ? initialRecord.scenario.referenceImage : '');
-  const [refImageId, setRefImageId] = useState<string>(initialRecord?.scenario ? initialRecord.scenario.expectedResult.referenceImageId : '');
-  const [refDate, setRefDate] = useState<string>(initialRecord?.scenario ? initialRecord.scenario.referenceDate : '');
-  const [refFileName, setRefFileName] = useState<string>(initialRecord ? `${initialRecord.id.toLowerCase()}-baseline.jpg` : '');
+  const [refImage, setRefImage] = useState<string>(initialRecord?.referenceImage || initialRecord?.scenario?.referenceImage || '');
+  const [refImageId, setRefImageId] = useState<string>(initialRecord?.scenario ? initialRecord.scenario.expectedResult.referenceImageId : (initialRecord ? `${initialRecord.id}-REF` : ''));
+  const [refDate, setRefDate] = useState<string>(initialRecord?.scenario ? initialRecord.scenario.referenceDate : '2026-09-14 09:30');
+  const [refFileName, setRefFileName] = useState<string>(initialRecord?.referenceImage || initialRecord?.scenario?.referenceImage ? 'reference.webp' : '');
   
-  // New Image Data
-  const [newImage, setNewImage] = useState<string>(initialRecord?.scenario ? initialRecord.scenario.newImage : '');
-  const [newImageId, setNewImageId] = useState<string>(initialRecord?.scenario ? initialRecord.scenario.expectedResult.newImageId : '');
-  const [newDate, setNewDate] = useState<string>(initialRecord?.scenario ? initialRecord.scenario.newImageDate : '');
-  const [newFileName, setNewFileName] = useState<string>(initialRecord ? `${initialRecord.id.toLowerCase()}-review.jpg` : '');
+  // Review Image Data (Starts EMPTY; user must explicitly upload or pick from gallery)
+  const [newImage, setNewImage] = useState<string>(() => {
+    try {
+      return sessionStorage.getItem('bodycheck_review_image_draft') || '';
+    } catch {
+      return '';
+    }
+  });
+  const [newImageId, setNewImageId] = useState<string>(() => {
+    try {
+      return sessionStorage.getItem('bodycheck_review_image_id_draft') || '';
+    } catch {
+      return '';
+    }
+  });
+  const [newDate, setNewDate] = useState<string>(() => {
+    try {
+      return sessionStorage.getItem('bodycheck_review_date_draft') || '';
+    } catch {
+      return '';
+    }
+  });
+  const [newFileName, setNewFileName] = useState<string>(() => {
+    try {
+      return sessionStorage.getItem('bodycheck_review_filename_draft') || '';
+    } catch {
+      return '';
+    }
+  });
+  const [isReviewNew, setIsReviewNew] = useState<boolean>(() => {
+    try {
+      return sessionStorage.getItem('bodycheck_review_is_new_draft') === 'true';
+    } catch {
+      return true;
+    }
+  });
+
+  const [isGalleryOpen, setIsGalleryOpen] = useState<boolean>(false);
 
   // Search & Picker State
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -145,25 +197,36 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
       setBodyRegion('' as BodyRegion);
     }
 
-    if (record.scenario) {
-      setRefImage(record.scenario.referenceImage);
-      setRefImageId(record.scenario.expectedResult.referenceImageId);
-      setRefDate(record.scenario.referenceDate);
-      setRefFileName(`${record.id.toLowerCase()}-baseline.jpg`);
-      setNewImage(record.scenario.newImage);
-      setNewImageId(record.scenario.expectedResult.newImageId);
-      setNewDate(record.scenario.newImageDate);
-      setNewFileName(`${record.id.toLowerCase()}-review.jpg`);
+    const ref = record.referenceImage || record.scenario?.referenceImage || '';
+
+    if (ref) {
+      setRefImage(ref);
+      setRefImageId(record.scenario?.expectedResult.referenceImageId || `${record.id}-REF`);
+      setRefDate(record.scenario?.referenceDate || '2026-09-14 09:30');
+      setRefFileName('reference.webp');
     } else {
       setRefImage('');
       setRefImageId('');
       setRefDate('');
       setRefFileName('');
-      setNewImage('');
-      setNewImageId('');
-      setNewDate('');
-      setNewFileName('');
     }
+
+    // Step 3 review image MUST start EMPTY
+    setNewImage('');
+    setNewImageId('');
+    setNewDate('');
+    setNewFileName('');
+    setIsReviewNew(true);
+    try {
+      sessionStorage.removeItem('bodycheck_review_image_draft');
+      sessionStorage.removeItem('bodycheck_review_image_id_draft');
+      sessionStorage.removeItem('bodycheck_review_date_draft');
+      sessionStorage.removeItem('bodycheck_review_filename_draft');
+      sessionStorage.removeItem('bodycheck_review_is_new_draft');
+    } catch {
+      // Ignore
+    }
+
     setValidationError(null);
     setSearchQuery('');
     setMaxUnlockedStep(1);
@@ -181,6 +244,16 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
     setNewImageId('');
     setNewDate('');
     setNewFileName('');
+    setIsReviewNew(true);
+    try {
+      sessionStorage.removeItem('bodycheck_review_image_draft');
+      sessionStorage.removeItem('bodycheck_review_image_id_draft');
+      sessionStorage.removeItem('bodycheck_review_date_draft');
+      sessionStorage.removeItem('bodycheck_review_filename_draft');
+      sessionStorage.removeItem('bodycheck_review_is_new_draft');
+    } catch {
+      // Ignore
+    }
     setValidationError(null);
     setMaxUnlockedStep(1);
     setCurrentStep(1);
@@ -250,14 +323,43 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
         setRefFileName(file.name);
         setRefDate(nowStr);
       } else {
+        const genId = `NEW-${patientId || 'RECORD'}-${Math.floor(100 + Math.random() * 900)}`;
         setNewImage(result);
-        setNewImageId(`NEW-${patientId || 'RECORD'}`);
+        setNewImageId(genId);
         setNewFileName(file.name);
         setNewDate(nowStr);
+        setIsReviewNew(true);
+        try {
+          sessionStorage.setItem('bodycheck_review_image_draft', result);
+          sessionStorage.setItem('bodycheck_review_image_id_draft', genId);
+          sessionStorage.setItem('bodycheck_review_date_draft', nowStr);
+          sessionStorage.setItem('bodycheck_review_filename_draft', file.name);
+          sessionStorage.setItem('bodycheck_review_is_new_draft', 'true');
+        } catch {
+          // Ignore
+        }
       }
       setValidationError(null);
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleSelectGalleryAsset = (asset: GalleryImageAsset) => {
+    setNewImage(asset.imageUrl);
+    setNewImageId(asset.id);
+    setNewFileName(asset.fileName);
+    setNewDate(asset.captureDate);
+    setIsReviewNew(Boolean(asset.isNew));
+    setValidationError(null);
+    try {
+      sessionStorage.setItem('bodycheck_review_image_draft', asset.imageUrl);
+      sessionStorage.setItem('bodycheck_review_image_id_draft', asset.id);
+      sessionStorage.setItem('bodycheck_review_date_draft', asset.captureDate);
+      sessionStorage.setItem('bodycheck_review_filename_draft', asset.fileName);
+      sessionStorage.setItem('bodycheck_review_is_new_draft', String(Boolean(asset.isNew)));
+    } catch {
+      // Ignore
+    }
   };
 
   const handleNextStep = () => {
@@ -689,59 +791,120 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            <div className="aspect-[4/3] bg-slate-950 rounded border border-slate-200 flex items-center justify-center overflow-hidden relative">
-              <img
-                src={newImage}
-                alt="New Review Photo"
-                className="w-full h-full object-contain"
-              />
-              <span className="absolute top-2 left-2 bg-sky-900/80 text-white text-[10px] font-mono px-2 py-0.5 rounded">
-                REVIEW IMAGE
-              </span>
-            </div>
+          {/* Hidden File Input for Review Image */}
+          <input
+            type="file"
+            ref={newFileInputRef}
+            accept="image/jpeg,image/png,image/webp"
+            onChange={(e) => handleFileUpload(e, 'new')}
+            className="hidden"
+          />
 
-            <div className="space-y-4 text-xs">
-              <div className="bg-slate-50 p-3.5 rounded border border-slate-200 space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">New Image ID:</span>
-                  <span className="font-mono font-bold text-slate-900">{newImageId}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Review Timestamp:</span>
-                  <span className="font-mono text-slate-800">{newDate}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Asset File:</span>
-                  <span className="font-mono text-slate-700 truncate max-w-[200px]">{newFileName}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Validation:</span>
-                  <span className="text-emerald-700 font-semibold flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3" /> Validated Review Image
-                  </span>
-                </div>
+          {!newImage ? (
+            /* Clean Empty Selection / Upload State */
+            <div className="border-2 border-dashed border-slate-300 rounded-lg p-10 text-center space-y-4 bg-slate-50/50">
+              <div className="h-12 w-12 rounded-full bg-sky-50 border border-sky-200 text-sky-700 flex items-center justify-center mx-auto">
+                <Upload className="w-6 h-6" />
+              </div>
+              <div className="max-w-md mx-auto space-y-1">
+                <h3 className="text-sm font-bold text-slate-900">
+                  Select a review image
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Choose an image to compare against the reference image.
+                </p>
               </div>
 
-              <div>
-                <input
-                  type="file"
-                  ref={newFileInputRef}
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={(e) => handleFileUpload(e, 'new')}
-                  className="hidden"
-                />
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => newFileInputRef.current?.click()}
-                  className="w-full py-2 px-3 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded text-xs font-medium text-slate-700 flex items-center justify-center gap-1.5 transition-colors"
+                  className="w-full sm:w-auto px-4 py-2.5 bg-sky-700 hover:bg-sky-800 text-white rounded text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
                 >
-                  <Upload className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Upload Alternative Review Image</span>
+                  <Upload className="w-4 h-4" />
+                  <span>Upload Image</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsGalleryOpen(true)}
+                  className="w-full sm:w-auto px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded text-xs font-semibold flex items-center justify-center gap-2 shadow-2xs transition-colors cursor-pointer"
+                >
+                  <ImageIcon className="w-4 h-4 text-slate-500" />
+                  <span>Choose from Gallery</span>
                 </button>
               </div>
             </div>
-          </div>
+          ) : (
+            /* Selected Review Image Preview Layout */
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              <div className="aspect-[4/3] bg-slate-950 rounded border border-slate-200 flex items-center justify-center overflow-hidden relative">
+                <img
+                  src={newImage}
+                  alt="New Review Photo"
+                  className="w-full h-full object-contain"
+                />
+                <span className="absolute top-2 left-2 bg-sky-900/80 text-white text-[10px] font-mono px-2 py-0.5 rounded flex items-center gap-1.5 shadow-2xs">
+                  <span>REVIEW IMAGE</span>
+                  {isReviewNew && (
+                    <span className="bg-emerald-600 text-white font-bold text-[9px] px-1 py-0.2 rounded uppercase">
+                      NEW
+                    </span>
+                  )}
+                </span>
+              </div>
+
+              <div className="space-y-4 text-xs">
+                <div className="bg-slate-50 p-3.5 rounded border border-slate-200 space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">New Image ID:</span>
+                    <span className="font-mono font-bold text-slate-900">{newImageId}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Review Timestamp:</span>
+                    <span className="font-mono text-slate-800">{newDate}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Asset File:</span>
+                    <span className="font-mono text-slate-700 truncate max-w-[200px]">{newFileName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">New Image Status:</span>
+                    <span className={isReviewNew ? "text-emerald-700 font-semibold" : "text-slate-700 font-semibold"}>
+                      {isReviewNew ? "Newly Added Review Image [NEW]" : "Existing Record Image"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Validation:</span>
+                    <span className="text-emerald-700 font-semibold flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> Validated Review Image
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-white rounded border border-slate-200 space-y-2">
+                  <span className="text-[11px] font-semibold text-slate-700 block">Replace Image:</span>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => newFileInputRef.current?.click()}
+                      className="flex-1 py-2 px-3 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded text-xs font-medium text-slate-700 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Upload className="w-3.5 h-3.5 text-slate-500" />
+                      <span>Upload Different</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsGalleryOpen(true)}
+                      className="flex-1 py-2 px-3 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded text-xs font-medium text-slate-700 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <ImageIcon className="w-3.5 h-3.5 text-slate-500" />
+                      <span>Choose from Gallery</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="pt-4 flex justify-between border-t border-slate-100">
             <button
@@ -750,7 +913,7 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
                 setValidationError(null);
                 setCurrentStep(2);
               }}
-              className="px-3 py-1.5 border border-slate-300 text-slate-600 rounded text-xs font-medium flex items-center gap-1 hover:bg-slate-50"
+              className="px-3 py-1.5 border border-slate-300 text-slate-600 rounded text-xs font-medium flex items-center gap-1 hover:bg-slate-50 cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Step 2 (Reference Image)</span>
@@ -758,7 +921,12 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
             <button
               type="button"
               onClick={handleNextStep}
-              className="px-4 py-2 bg-sky-700 hover:bg-sky-800 text-white text-xs font-semibold rounded shadow-sm flex items-center gap-1.5"
+              disabled={!newImage}
+              className={`px-4 py-2 text-xs font-semibold rounded shadow-sm flex items-center gap-1.5 transition-colors ${
+                newImage
+                  ? 'bg-sky-700 hover:bg-sky-800 text-white cursor-pointer'
+                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+              }`}
             >
               <span>Continue to Step 4 (Compare)</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -851,19 +1019,58 @@ export const NewCheckView: React.FC<NewCheckViewProps> = ({
                 <span>Back to Step 3 (Review Image)</span>
               </button>
 
-              <button
-                type="button"
-                onClick={handleProcessSubmit}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-sky-700 hover:bg-sky-800 text-white text-sm font-semibold rounded-md shadow-sm transition-colors focus:ring-2 focus:ring-sky-500"
-              >
-                <span>Analyze Images</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                {onSaveReadyToAnalyze && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!refImage || !newImage) {
+                        setValidationError('Both reference baseline and follow-up review images are required.');
+                        return;
+                      }
+                      onSaveReadyToAnalyze({
+                        patientRecordId: patientId,
+                        referenceImage: refImage,
+                        referenceImageId: refImageId || `${patientId}-REF`,
+                        referenceDate: refDate,
+                        newImage: newImage,
+                        newImageId: newImageId || `${patientId}-NEW`,
+                        newImageDate: newDate,
+                        bodyRegion: bodyRegion,
+                      });
+                    }}
+                    className="px-4 py-2 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-md shadow-sm transition-colors"
+                  >
+                    Save Check (Ready to Analyze)
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleProcessSubmit}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-sky-700 hover:bg-sky-800 text-white text-sm font-semibold rounded-md shadow-sm transition-colors focus:ring-2 focus:ring-sky-500"
+                >
+                  <span>Analyze Images</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
 
         </div>
       )}
+
+      {/* Review Image Gallery Selection Modal */}
+      <ReviewImageGalleryModal
+        isOpen={isGalleryOpen}
+        onClose={() => setIsGalleryOpen(false)}
+        onSelectAsset={handleSelectGalleryAsset}
+        currentlySelectedId={newImageId}
+        recordId={patientId}
+        bodyRegion={bodyRegion}
+        referenceImage={refImage}
+        referenceImageId={refImageId}
+      />
 
     </div>
   );

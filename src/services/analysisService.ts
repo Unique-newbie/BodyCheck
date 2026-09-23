@@ -51,14 +51,21 @@ export async function analyzeBodyCheck(params: AnalysisParams): Promise<Analysis
   }
 
   // 1. Check for matched demonstration scenario
-  const matchedScenario = DEMO_SCENARIOS.find(
-    s => s.patientRecordId.toUpperCase() === patientRecordId.toUpperCase() &&
-         (s.bodyRegion.toLowerCase() === bodyRegion.toLowerCase() ||
-          (s.bodyRegion.includes('Back') && bodyRegion.includes('Back')) ||
-          (s.bodyRegion.includes('Knee') && bodyRegion.includes('Knee')))
-  ) || DEMO_SCENARIOS.find(
-    s => s.patientRecordId.toUpperCase() === patientRecordId.toUpperCase()
-  );
+  // Match by exact review image URL or review image ID first so candidate scenarios for the same record are accurately resolved
+  const matchedScenario =
+    DEMO_SCENARIOS.find(
+      s => (params.newImage && s.newImage === params.newImage) ||
+           (params.newImageId && s.expectedResult.newImageId.toUpperCase() === params.newImageId.toUpperCase())
+    ) ||
+    DEMO_SCENARIOS.find(
+      s => s.patientRecordId.toUpperCase() === patientRecordId.toUpperCase() &&
+           (s.bodyRegion.toLowerCase() === bodyRegion.toLowerCase() ||
+            (s.bodyRegion.includes('Back') && bodyRegion.includes('Back')) ||
+            (s.bodyRegion.includes('Knee') && bodyRegion.includes('Knee')))
+    ) ||
+    DEMO_SCENARIOS.find(
+      s => s.patientRecordId.toUpperCase() === patientRecordId.toUpperCase()
+    );
 
   if (matchedScenario) {
     return {

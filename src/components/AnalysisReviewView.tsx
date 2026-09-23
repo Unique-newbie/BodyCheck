@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 
 interface AnalysisReviewViewProps {
+  recordId?: string;
   referenceImage: string;
   referenceImageId: string;
   referenceDate: string;
@@ -40,9 +41,11 @@ interface AnalysisReviewViewProps {
   onSaveDraft?: (recordId: string, text: string) => void;
   onBackToNew: () => void;
   onNavigateHistory: () => void;
+  onNavigateDashboard?: () => void;
 }
 
 export const AnalysisReviewView: React.FC<AnalysisReviewViewProps> = ({
+  recordId,
   referenceImage,
   referenceImageId,
   referenceDate,
@@ -57,7 +60,8 @@ export const AnalysisReviewView: React.FC<AnalysisReviewViewProps> = ({
   currentUser,
   onSaveConfirmed,
   onBackToNew,
-  onNavigateHistory
+  onNavigateHistory,
+  onNavigateDashboard
 }) => {
   // State for observation editing
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -236,7 +240,7 @@ export const AnalysisReviewView: React.FC<AnalysisReviewViewProps> = ({
     });
 
     const checkRecord: BodyCheckRecord = {
-      id: `BC-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+      id: recordId || `BC-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
       patientRecordId,
       referenceImage,
       referenceImageId,
@@ -256,6 +260,7 @@ export const AnalysisReviewView: React.FC<AnalysisReviewViewProps> = ({
       reviewer: reviewerName,
       reviewerRole: reviewerRole,
       confirmedAt: timestamp,
+      updatedAt: timestamp,
       reviewerNotes: reviewerNotes || undefined,
       changeCoordinates: analysis.changeCoordinates,
       auditTrail: initialAudit.reverse()
@@ -347,6 +352,14 @@ export const AnalysisReviewView: React.FC<AnalysisReviewViewProps> = ({
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            {onNavigateDashboard && (
+              <button
+                onClick={onNavigateDashboard}
+                className="text-xs font-semibold px-3 py-2 bg-white border border-emerald-300 hover:bg-emerald-50 text-emerald-800 rounded shadow-sm transition-colors"
+              >
+                Return to Dashboard
+              </button>
+            )}
             <button
               onClick={onNavigateHistory}
               className="text-xs font-semibold px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded shadow-sm transition-colors flex items-center gap-1"

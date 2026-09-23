@@ -75,6 +75,7 @@ export const App: React.FC = () => {
 
   // Active Comparison / Analysis Flow State
   const [activeAnalysisData, setActiveAnalysisData] = useState<{
+    recordId?: string;
     patientRecordId: string;
     referenceImage: string;
     referenceImageId: string;
@@ -84,13 +85,13 @@ export const App: React.FC = () => {
     newImageDate: string;
     bodyRegion: BodyRegion;
   }>({
-    patientRecordId: 'IF456',
+    patientRecordId: '',
     referenceImage: '',
-    referenceImageId: 'IF456',
-    referenceDate: '2026-09-14 09:30',
+    referenceImageId: '',
+    referenceDate: '',
     newImage: '',
-    newImageId: 'IF456-REV-02',
-    newImageDate: '2026-09-21 14:15',
+    newImageId: '',
+    newImageDate: '',
     bodyRegion: 'Left Shoulder'
   });
 
@@ -121,6 +122,7 @@ export const App: React.FC = () => {
 
   // Handler triggered when user clicks "Analyze Images"
   const handleAnalyze = async (params: {
+    recordId?: string;
     patientRecordId: string;
     referenceImage: string;
     referenceImageId: string;
@@ -130,7 +132,16 @@ export const App: React.FC = () => {
     newImageDate: string;
     bodyRegion: BodyRegion;
   }) => {
-    setActiveAnalysisData(params);
+    // Find existing matching record if any
+    const existingRecord = bodyCheckService.getRecords().find(
+      r => (params.recordId && r.id === params.recordId) ||
+           (r.patientRecordId === params.patientRecordId && 
+            r.bodyRegion === params.bodyRegion && 
+            (r.status === 'not_analyzed' || r.status === 'ready_to_analyze'))
+    );
+    const recordId = params.recordId || (existingRecord ? existingRecord.id : bodyCheckService.generateCheckId());
+
+    setActiveAnalysisData({ ...params, recordId });
     setCurrentTab('review');
     setIsAnalyzing(true);
     setCurrentAnalysis(null);
@@ -148,6 +159,68 @@ export const App: React.FC = () => {
         }
       });
       setCurrentAnalysis(result);
+
+      // Register the completed analysis as an actionable pending check (Ready for Review)
+      const nowStr = bodyCheckService.getCurrentTimestamp();
+
+      const baseAudit = existingRecord?.auditTrail && existingRecord.auditTrail.length > 0
+        ? existingRecord.auditTrail
+        : [
+            {
+              id: `aud-${Date.now()}-1`,
+              timestamp: params.referenceDate,
+              actor: 'System',
+              actorRole: 'Baseline Intake',
+              action: 'Baseline image registered',
+              details: `Reference image ${params.referenceImageId} established.`
+            }
+          ];
+
+      const pendingRecord: BodyCheckRecord = {
+        id: recordId,
+        patientRecordId: params.patientRecordId,
+        patientName: existingRecord?.patientName || `Record ${params.patientRecordId}`,
+        referenceImage: params.referenceImage,
+        referenceImageId: params.referenceImageId,
+        referenceDate: params.referenceDate,
+        newImage: params.newImage,
+        newImageId: params.newImageId,
+        newImageDate: params.newImageDate,
+        bodyRegion: result.bodyRegion,
+        changeType: result.changeType,
+        finding: result.finding,
+        confidence: result.confidence,
+        confidenceScore: result.confidenceScore,
+        candidateFinding: result.candidateFinding,
+        aiObservation: result.aiObservation,
+        finalObservation: '',
+        status: 'ready_for_review',
+        changeCoordinates: result.changeCoordinates,
+        updatedAt: nowStr,
+        createdAt: existingRecord?.createdAt || nowStr,
+        auditTrail: [
+          {
+            id: `aud-${Date.now()}-3`,
+            timestamp: nowStr,
+            actor: 'System',
+            actorRole: 'Comparative Analysis',
+            action: 'Comparative analysis completed',
+            details: `Candidate finding identified: ${result.finding} (${result.confidence} confidence). AI draft generated.`
+          },
+          {
+            id: `aud-${Date.now()}-2`,
+            timestamp: params.newImageDate,
+            actor: currentUser?.name || 'Reviewer',
+            actorRole: currentUser?.role || 'Reviewer',
+            action: 'Review check initiated',
+            details: `New review image ${params.newImageId} registered for ${result.bodyRegion}.`
+          },
+          ...baseAudit
+        ]
+      };
+
+      bodyCheckService.saveNewCheck(pendingRecord);
+      setRecords(bodyCheckService.getRecords());
     } catch (err) {
       console.error('Analysis error:', err);
     } finally {
@@ -155,10 +228,79 @@ export const App: React.FC = () => {
     }
   };
 
+  // Handler when user saves a check without immediate analysis (Ready to Analyze)
+  const handleSaveReadyToAnalyze = (params: {
+    patientRecordId: string;
+    referenceImage: string;
+    referenceImageId: string;
+    referenceDate: string;
+    newImage: string;
+    newImageId: string;
+    newImageDate: string;
+    bodyRegion: BodyRegion;
+  }) => {
+    const nowStr = bodyCheckService.getCurrentTimestamp();
+    const existing = bodyCheckService.getRecords().find(
+      r => r.patientRecordId === params.patientRecordId &&
+           r.bodyRegion === params.bodyRegion &&
+           r.status === 'not_analyzed'
+    );
+    const recordId = existing ? existing.id : bodyCheckService.generateCheckId();
+
+    const record: BodyCheckRecord = {
+      id: recordId,
+      patientRecordId: params.patientRecordId,
+      patientName: existing?.patientName || `Record ${params.patientRecordId}`,
+      referenceImage: params.referenceImage,
+      referenceImageId: params.referenceImageId,
+      referenceDate: params.referenceDate,
+      newImage: params.newImage,
+      newImageId: params.newImageId,
+      newImageDate: params.newImageDate,
+      bodyRegion: params.bodyRegion,
+      finding: '',
+      aiObservation: '',
+      finalObservation: '',
+      status: 'ready_to_analyze',
+      updatedAt: nowStr,
+      createdAt: existing?.createdAt || nowStr,
+      auditTrail: [
+        {
+          id: `aud-${Date.now()}-2`,
+          timestamp: nowStr,
+          actor: currentUser?.name || 'Reviewer',
+          actorRole: currentUser?.role || 'Reviewer',
+          action: 'Review photograph registered',
+          details: `Review photograph ${params.newImageId} registered for ${params.bodyRegion}. Ready for comparative analysis.`
+        },
+        ...(existing?.auditTrail || [
+          {
+            id: `aud-${Date.now()}-1`,
+            timestamp: params.referenceDate,
+            actor: 'System',
+            actorRole: 'Baseline Intake',
+            action: 'Baseline image registered',
+            details: `Reference image ${params.referenceImageId} established.`
+          }
+        ])
+      ]
+    };
+
+    bodyCheckService.saveNewCheck(record);
+    setRecords(bodyCheckService.getRecords());
+    setCurrentTab('dashboard');
+  };
+
   // Handler when reviewer confirms observation
   const handleSaveConfirmedRecord = (confirmedRecord: BodyCheckRecord) => {
-    bodyCheckService.saveNewCheck(confirmedRecord);
+    const nowStr = bodyCheckService.getCurrentTimestamp();
+    const recordToSave = {
+      ...confirmedRecord,
+      updatedAt: confirmedRecord.updatedAt || nowStr
+    };
+    bodyCheckService.saveNewCheck(recordToSave);
     setRecords(bodyCheckService.getRecords());
+    setSelectedRecordForDetail(recordToSave);
   };
 
   // Handler to inspect record details
@@ -172,6 +314,43 @@ export const App: React.FC = () => {
     if (window.confirm('Reset records back to initial default state?')) {
       const reset = bodyCheckService.resetToDemoData();
       setRecords(reset);
+    }
+  };
+
+  // Handler when user clicks "Start Analysis" from Dashboard/History/Detail
+  const handleStartAnalysis = (record: BodyCheckRecord) => {
+    if (record.newImage) {
+      handleAnalyze({
+        recordId: record.id,
+        patientRecordId: record.patientRecordId,
+        referenceImage: record.referenceImage,
+        referenceImageId: record.referenceImageId,
+        referenceDate: record.referenceDate,
+        newImage: record.newImage,
+        newImageId: record.newImageId || 'REV-01',
+        newImageDate: record.newImageDate || new Date().toISOString().slice(0, 16).replace('T', ' '),
+        bodyRegion: record.bodyRegion
+      });
+    } else {
+      handleStartNewCheck(record.patientRecordId);
+    }
+  };
+
+  // Handler when user clicks "View Progress"
+  const handleViewProgress = (record: BodyCheckRecord) => {
+    if (record.newImage) {
+      handleAnalyze({
+        patientRecordId: record.patientRecordId,
+        referenceImage: record.referenceImage,
+        referenceImageId: record.referenceImageId,
+        referenceDate: record.referenceDate,
+        newImage: record.newImage,
+        newImageId: record.newImageId || 'REV-01',
+        newImageDate: record.newImageDate || new Date().toISOString().slice(0, 16).replace('T', ' '),
+        bodyRegion: record.bodyRegion
+      });
+    } else {
+      handleOpenRecord(record);
     }
   };
 
@@ -225,6 +404,8 @@ export const App: React.FC = () => {
             records={records}
             onStartNewCheck={handleStartNewCheck}
             onOpenRecord={handleOpenRecord}
+            onStartAnalysis={handleStartAnalysis}
+            onViewProgress={handleViewProgress}
           />
         )}
 
@@ -233,6 +414,7 @@ export const App: React.FC = () => {
             patients={patients}
             initialPatientId={selectedPatientId}
             onAnalyze={handleAnalyze}
+            onSaveReadyToAnalyze={handleSaveReadyToAnalyze}
             onCancel={() => {
               setSelectedPatientId(undefined);
               setCurrentTab('dashboard');
@@ -242,6 +424,7 @@ export const App: React.FC = () => {
 
         {currentTab === 'review' && (
           <AnalysisReviewView
+            recordId={activeAnalysisData.recordId}
             referenceImage={activeAnalysisData.referenceImage}
             referenceImageId={activeAnalysisData.referenceImageId}
             referenceDate={activeAnalysisData.referenceDate}
@@ -258,6 +441,7 @@ export const App: React.FC = () => {
             onSaveConfirmed={handleSaveConfirmedRecord}
             onBackToNew={() => setCurrentTab('new-check')}
             onNavigateHistory={() => setCurrentTab('history')}
+            onNavigateDashboard={() => setCurrentTab('dashboard')}
           />
         )}
 
@@ -266,13 +450,28 @@ export const App: React.FC = () => {
             records={records}
             onOpenRecord={handleOpenRecord}
             onStartNewCheck={() => handleStartNewCheck()}
+            onStartAnalysis={handleStartAnalysis}
+            onViewProgress={handleViewProgress}
           />
         )}
 
         {currentTab === 'detail' && selectedRecordForDetail && (
           <DetailView
             record={selectedRecordForDetail}
+            currentUser={currentUser}
             onBack={() => setCurrentTab('history')}
+            onConfirmRecord={(updatedRecord) => {
+              const nowStr = bodyCheckService.getCurrentTimestamp();
+              const recordToSave = {
+                ...updatedRecord,
+                updatedAt: nowStr
+              };
+              bodyCheckService.saveNewCheck(recordToSave);
+              setRecords(bodyCheckService.getRecords());
+              setSelectedRecordForDetail(recordToSave);
+            }}
+            onStartAnalysis={handleStartAnalysis}
+            onViewProgress={handleViewProgress}
           />
         )}
 

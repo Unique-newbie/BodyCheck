@@ -1,8 +1,7 @@
 import { BodyCheckRecord, AuditEvent } from '../types/bodyCheck';
 import { INITIAL_BODY_CHECKS } from '../data/mockRecords';
 
-const STORAGE_KEY = 'bodycheck_records_v4';
-const LEGACY_STORAGE_KEY = 'bodycheck_poc_records_v4';
+const STORAGE_KEY = 'bodycheck_records_v10';
 
 class BodyCheckService {
   private records: BodyCheckRecord[] = [];
@@ -13,7 +12,7 @@ class BodyCheckService {
 
   private loadRecords(): void {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
+      const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         this.records = JSON.parse(saved);
         return;
@@ -41,7 +40,20 @@ class BodyCheckService {
     return this.records.find(r => r.id === id);
   }
 
+  public generateCheckId(): string {
+    const num = Math.floor(1000 + Math.random() * 9000);
+    return `BC-${new Date().getFullYear()}-${num}`;
+  }
+
+  public getCurrentTimestamp(): string {
+    return this.formatTimestamp();
+  }
+
   public saveNewCheck(record: BodyCheckRecord): BodyCheckRecord {
+    // Ensure record has updatedAt
+    if (!record.updatedAt) {
+      record.updatedAt = this.formatTimestamp();
+    }
     // Check if record already exists
     const existingIndex = this.records.findIndex(r => r.id === record.id);
     if (existingIndex >= 0) {
@@ -64,6 +76,7 @@ class BodyCheckService {
     const timestamp = this.formatTimestamp();
     record.finalObservation = draftText;
     record.draftSavedAt = timestamp;
+    record.updatedAt = timestamp;
     record.status = 'ai_draft_ready';
 
     const auditEvent: AuditEvent = {
@@ -96,6 +109,7 @@ class BodyCheckService {
     record.reviewer = reviewerName;
     record.reviewerRole = reviewerRole;
     record.confirmedAt = timestamp;
+    record.updatedAt = timestamp;
     if (notes) record.reviewerNotes = notes;
 
     const auditEvent: AuditEvent = {

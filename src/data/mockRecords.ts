@@ -1,349 +1,742 @@
-import { BodyCheckRecord, PatientRecord, DemoScenario } from '../types/bodyCheck';
+import { BodyCheckRecord, PatientRecord, DemoScenario, BodyRegion, ImageType } from '../types/bodyCheck';
 
 /**
  * Centrally managed demonstration photographic assets.
- * All images are bundled locally in public/images/demo/ for zero external network dependency.
+ * All images are bundled locally in public/images/body-check/ for zero external network dependency.
  */
-export const DEMO_ASSETS = {
+export const BODY_CHECK_IMAGE_ASSETS = {
   if456: {
-    reference: '/images/demo/if456-shoulder-ref.jpg',
-    review: '/images/demo/if456-shoulder-review.jpg',
+    reference: '/images/body-check/IF456/reference.webp',
+    review: '/images/body-check/IF456/review-01.webp',
+    review01: '/images/body-check/IF456/review-01.webp',
+    review02: '/images/body-check/IF456/review-02.webp',
+    review03: '/images/body-check/IF456/review-03.webp',
   },
   if455: {
-    reference: '/images/demo/if455-forearm-ref.jpg',
-    review: '/images/demo/if455-forearm-review.jpg',
+    reference: '/images/body-check/IF455/reference.webp',
+    review: '/images/body-check/IF455/review-01.webp',
+    review01: '/images/body-check/IF455/review-01.webp',
+    review02: '/images/body-check/IF455/review-02.webp',
   },
   if452: {
-    reference: '/images/demo/if452-back-ref.jpg',
-    review: '/images/demo/if452-back-review.jpg',
+    reference: '/images/body-check/IF452/reference.webp',
+    review: '/images/body-check/IF452/review-01.webp',
+    review01: '/images/body-check/IF452/review-01.webp',
   },
   if439: {
-    reference: '/images/demo/if439-knee-ref.jpg',
-    review: '/images/demo/if439-knee-review.jpg',
+    reference: '/images/body-check/IF439/reference.webp',
+    review: '/images/body-check/IF439/review-01.webp',
+    review01: '/images/body-check/IF439/review-01.webp',
+    review02: '/images/body-check/IF439/review-02.webp',
+  },
+  if460: {
+    reference: '/images/body-check/IF460/reference.webp',
+    review: '/images/body-check/IF460/review-01.webp',
+    review01: '/images/body-check/IF460/review-01.webp',
+    review02: '/images/body-check/IF460/review-02.webp',
+    review03: '/images/body-check/IF460/review-03.webp',
   },
   if461: {
-    reference: '/images/demo/if461-rshoulder-ref.jpg',
-    review: '/images/demo/if461-rshoulder-review.jpg',
+    reference: '/images/body-check/IF461/reference.webp',
+    review: '/images/body-check/IF461/review-01.webp',
+    review01: '/images/body-check/IF461/review-01.webp',
   },
-  if468: {
-    reference: '/images/demo/if468-lupperarm-ref.jpg',
-    review: '/images/demo/if468-lupperarm-review.jpg',
+  if462: {
+    reference: '/images/body-check/IF462/reference.webp',
+    review: '/images/body-check/IF462/review-01.webp',
+    review01: '/images/body-check/IF462/review-01.webp',
+    review02: '/images/body-check/IF462/review-02.webp',
   },
-  if472: {
-    reference: '/images/demo/if472-lowerback-ref.jpg',
-    review: '/images/demo/if472-lowerback-review.jpg',
-  },
-  if477: {
-    reference: '/images/demo/if477-rknee-ref.jpg',
-    review: '/images/demo/if477-rknee-review.jpg',
+  if463: {
+    reference: '/images/body-check/IF463/reference.webp',
+    review: '/images/body-check/IF463/review-01.webp',
+    review01: '/images/body-check/IF463/review-01.webp',
+    review02: '/images/body-check/IF463/review-02.webp',
   }
 };
 
+// Aliased for backwards compatibility
+export const DEMO_ASSETS = BODY_CHECK_IMAGE_ASSETS;
+
 // Built-in synthetic test scenarios using realistic photographic demonstration images
 export const DEMO_SCENARIOS: DemoScenario[] = [
-  // 1. IF456 — Primary Demonstration (Left Shoulder)
   {
-    id: 'scenario-if456',
-    title: 'IF456 — Left Shoulder (Color / Bruise-like Change)',
+    id: 'scenario-if456-01',
+    title: 'IF456 — Left Shoulder (Localized bruise/contusion over shoulder/deltoid ridge)',
     patientRecordId: 'IF456',
     bodyRegion: 'Left Shoulder',
-    description: 'Baseline reference comparison showing visible reddish discoloration on the left shoulder deltoid compared to baseline.',
+    refSourceId: 'REF-001',
+    reviewDescription: 'Localized reddish/purple bruise/contusion over the shoulder/deltoid ridge',
+    imageType: 'abnormal finding',
+    isNew: true,
+    description: 'Comparison of the review image with the reference image shows a localized reddish-purple bruise/contusion over the left shoulder/deltoid ridge.',
     referenceDate: '2026-09-14 09:30',
     newImageDate: '2026-09-21 14:15',
-    referenceImage: DEMO_ASSETS.if456.reference,
-    newImage: DEMO_ASSETS.if456.review,
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if456.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if456.review01,
     expectedResult: {
       referenceImageId: 'IF456',
       referenceDate: '2026-09-14 09:30',
-      newImageId: 'IF456-REV-02',
+      newImageId: 'IF456-REV-01',
       newImageDate: '2026-09-21 14:15',
       bodyRegion: 'Left Shoulder',
-      changeType: 'Color / Skin Appearance Change',
-      finding: 'Reddish discoloration / bruise-like appearance',
+      changeType: 'Visible color change / contusion-like discoloration',
+      finding: 'Localized reddish/purple bruise/contusion over the shoulder/deltoid ridge',
       confidence: 'Moderate',
       confidenceScore: 0.78,
       candidateFinding: {
         bodyRegion: 'Left Shoulder',
-        changeType: 'Color / Skin Appearance Change',
-        finding: 'Reddish discoloration / bruise-like appearance',
+        changeType: 'Visible color change / contusion-like discoloration',
+        finding: 'Localized reddish/purple bruise/contusion over the shoulder/deltoid ridge',
         confidence: 'Moderate',
         confidenceScore: 0.78,
         changeCoordinates: {
-          xPercent: 48.0,
-          yPercent: 41.5,
+          xPercent: 36.5,
+          yPercent: 52.8,
           radiusPercent: 12
         }
       },
-      aiObservation: 'Reviewing the new picture against reference image IF456, there is a reddish discoloration on the right side of the left shoulder suggesting a possible bruise-like change.',
-      changeCoordinates: {
-        xPercent: 48.0,
-        yPercent: 41.5,
-        radiusPercent: 12
-      }
+      aiObservation: 'Comparison of the review image with the reference image shows a localized reddish-purple bruise/contusion over the left shoulder/deltoid ridge.',
+        changeCoordinates: {
+          xPercent: 36.5,
+          yPercent: 52.8,
+          radiusPercent: 12
+        }
     }
   },
 
-  // 2. IF455 — Right Forearm (Linear Surface Erythema)
   {
-    id: 'scenario-if455',
-    title: 'IF455 — Right Forearm (Linear Surface Erythema)',
+    id: 'scenario-if456-02',
+    title: 'IF456 — Left Shoulder (Mild localized erythema/redness)',
+    patientRecordId: 'IF456',
+    bodyRegion: 'Left Shoulder',
+    refSourceId: 'REF-001',
+    reviewDescription: 'Mild localized erythema/redness',
+    imageType: 'abnormal finding',
+    isNew: true,
+    description: 'Comparison of the review image with the reference image shows mild localized erythema/redness over the left deltoid region.',
+    referenceDate: '2026-09-14 09:30',
+    newImageDate: '2026-09-21 14:20',
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if456.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if456.review02,
+    expectedResult: {
+      referenceImageId: 'IF456',
+      referenceDate: '2026-09-14 09:30',
+      newImageId: 'IF456-REV-02',
+      newImageDate: '2026-09-21 14:20',
+      bodyRegion: 'Left Shoulder',
+      changeType: 'Localized erythema / skin appearance change',
+      finding: 'Mild localized erythema/redness',
+      confidence: 'Moderate',
+      confidenceScore: 0.81,
+      candidateFinding: {
+        bodyRegion: 'Left Shoulder',
+        changeType: 'Localized erythema / skin appearance change',
+        finding: 'Mild localized erythema/redness',
+        confidence: 'Moderate',
+        confidenceScore: 0.81,
+        changeCoordinates: {
+          xPercent: 38.0,
+          yPercent: 50.5,
+          radiusPercent: 10
+        }
+      },
+      aiObservation: 'Comparison of the review image with the reference image shows mild localized erythema/redness over the left deltoid region.',
+        changeCoordinates: {
+          xPercent: 38.0,
+          yPercent: 50.5,
+          radiusPercent: 10
+        }
+    }
+  },
+
+  {
+    id: 'scenario-if456-03',
+    title: 'IF456 — Left Shoulder (Normal / unchanged)',
+    patientRecordId: 'IF456',
+    bodyRegion: 'Left Shoulder',
+    refSourceId: 'REF-001',
+    reviewDescription: 'Normal/no significant visible change',
+    imageType: 'normal / unchanged',
+    isNew: false,
+    description: 'No significant visible change identified between the reference and review images in the assessed left shoulder region.',
+    referenceDate: '2026-09-14 09:30',
+    newImageDate: '2026-09-21 14:30',
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if456.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if456.review03,
+    expectedResult: {
+      referenceImageId: 'IF456',
+      referenceDate: '2026-09-14 09:30',
+      newImageId: 'IF456-REV-03',
+      newImageDate: '2026-09-21 14:30',
+      bodyRegion: 'Left Shoulder',
+      changeType: 'No significant visible change',
+      finding: 'Normal/no significant visible change',
+      confidence: 'High',
+      confidenceScore: 0.95,
+      candidateFinding: {
+        bodyRegion: 'Left Shoulder',
+        changeType: 'No significant visible change',
+        finding: 'Normal/no significant visible change',
+        confidence: 'High',
+        confidenceScore: 0.95
+      },
+      aiObservation: 'No significant visible change identified between the reference and review images in the assessed left shoulder region.'
+    }
+  },
+
+  {
+    id: 'scenario-if455-01',
+    title: 'IF455 — Right Forearm (Reddish-purple localized bruising over mid-shaft volar forearm)',
     patientRecordId: 'IF455',
     bodyRegion: 'Right Forearm',
-    description: 'Follow-up inspection showing superficial linear surface erythema along the distal volar forearm.',
+    refSourceId: 'REF-005',
+    reviewDescription: 'Reddish-purple localized bruising over the mid-shaft volar forearm',
+    imageType: 'abnormal finding',
+    isNew: true,
+    description: 'Comparison of the review image with the reference image shows reddish-purple localized bruising over the mid-shaft volar forearm.',
     referenceDate: '2026-09-10 11:00',
     newImageDate: '2026-09-21 10:45',
-    referenceImage: DEMO_ASSETS.if455.reference,
-    newImage: DEMO_ASSETS.if455.review,
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if455.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if455.review01,
     expectedResult: {
       referenceImageId: 'IF455',
       referenceDate: '2026-09-10 11:00',
-      newImageId: 'IF455-REV-04',
+      newImageId: 'IF455-REV-01',
       newImageDate: '2026-09-21 10:45',
       bodyRegion: 'Right Forearm',
-      changeType: 'Tissue / Skin Appearance Difference',
-      finding: 'Linear surface erythema / abrasion-like marking',
+      changeType: 'Visible color change / contusion-like discoloration',
+      finding: 'Reddish-purple localized bruising over the mid-shaft volar forearm',
       confidence: 'High',
       confidenceScore: 0.89,
       candidateFinding: {
         bodyRegion: 'Right Forearm',
-        changeType: 'Tissue / Skin Appearance Difference',
-        finding: 'Linear surface erythema / abrasion-like marking',
+        changeType: 'Visible color change / contusion-like discoloration',
+        finding: 'Reddish-purple localized bruising over the mid-shaft volar forearm',
         confidence: 'High',
         confidenceScore: 0.89,
         changeCoordinates: {
-          xPercent: 54.0,
-          yPercent: 55.0,
-          radiusPercent: 12
+          xPercent: 46.8,
+          yPercent: 49.4,
+          radiusPercent: 10
         }
       },
-      aiObservation: 'Reviewing the new picture against reference image IF455, superficial linear erythema is noted across the distal volar aspect of the right forearm without visible swelling.',
-      changeCoordinates: {
-        xPercent: 54.0,
-        yPercent: 55.0,
-        radiusPercent: 12
-      }
+      aiObservation: 'Comparison of the review image with the reference image shows reddish-purple localized bruising over the mid-shaft volar forearm.',
+        changeCoordinates: {
+          xPercent: 46.8,
+          yPercent: 49.4,
+          radiusPercent: 10
+        }
     }
   },
 
-  // 3. IF452 — Back (Routine Check / No Significant Change)
   {
-    id: 'scenario-if452',
-    title: 'IF452 — Back (Routine Check / No Significant Change)',
+    id: 'scenario-if455-02',
+    title: 'IF455 — Right Forearm (Resolving bruise with yellowish/brown peripheral discoloration)',
+    patientRecordId: 'IF455',
+    bodyRegion: 'Right Forearm',
+    refSourceId: 'REF-005',
+    reviewDescription: 'Resolving bruise with subtler yellowish/brown peripheral discoloration',
+    imageType: 'abnormal finding',
+    isNew: true,
+    description: 'Comparison of the review image with the reference image shows a resolving bruise with subtler yellowish/brown peripheral discoloration on the right forearm.',
+    referenceDate: '2026-09-10 11:00',
+    newImageDate: '2026-09-21 10:50',
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if455.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if455.review02,
+    expectedResult: {
+      referenceImageId: 'IF455',
+      referenceDate: '2026-09-10 11:00',
+      newImageId: 'IF455-REV-02',
+      newImageDate: '2026-09-21 10:50',
+      bodyRegion: 'Right Forearm',
+      changeType: 'Localized skin-color variation',
+      finding: 'Resolving bruise with subtler yellowish/brown peripheral discoloration',
+      confidence: 'Moderate',
+      confidenceScore: 0.84,
+      candidateFinding: {
+        bodyRegion: 'Right Forearm',
+        changeType: 'Localized skin-color variation',
+        finding: 'Resolving bruise with subtler yellowish/brown peripheral discoloration',
+        confidence: 'Moderate',
+        confidenceScore: 0.84,
+        changeCoordinates: {
+          xPercent: 47.2,
+          yPercent: 51.0,
+          radiusPercent: 11
+        }
+      },
+      aiObservation: 'Comparison of the review image with the reference image shows a resolving bruise with subtler yellowish/brown peripheral discoloration on the right forearm.',
+        changeCoordinates: {
+          xPercent: 47.2,
+          yPercent: 51.0,
+          radiusPercent: 11
+        }
+    }
+  },
+
+  {
+    id: 'scenario-if452-01',
+    title: 'IF452 — Back (Normal / no significant visible change)',
     patientRecordId: 'IF452',
     bodyRegion: 'Back',
-    description: 'Routine follow-up body check showing stable baseline appearance with no identified visible changes.',
+    refSourceId: 'REF-001',
+    reviewDescription: 'Normal/no significant visible change',
+    imageType: 'normal / unchanged',
+    isNew: false,
+    description: 'No significant visible change identified between the reference and review images in the assessed back region.',
     referenceDate: '2026-09-08 16:20',
     newImageDate: '2026-09-21 15:00',
-    referenceImage: DEMO_ASSETS.if452.reference,
-    newImage: DEMO_ASSETS.if452.review,
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if452.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if452.review01,
     expectedResult: {
       referenceImageId: 'IF452',
       referenceDate: '2026-09-08 16:20',
       newImageId: 'IF452-REV-01',
       newImageDate: '2026-09-21 15:00',
       bodyRegion: 'Back',
-      changeType: 'No Significant Visible Change',
-      finding: 'No significant visible change identified',
+      changeType: 'No significant visible change',
+      finding: 'Normal/no significant visible change',
       confidence: 'High',
-      confidenceScore: 0.94,
+      confidenceScore: 0.96,
       candidateFinding: {
         bodyRegion: 'Back',
-        changeType: 'No Significant Visible Change',
-        finding: 'No significant visible change identified',
+        changeType: 'No significant visible change',
+        finding: 'Normal/no significant visible change',
         confidence: 'High',
-        confidenceScore: 0.94
+        confidenceScore: 0.96
       },
-      aiObservation: 'Reviewing the new picture against reference image IF452, no significant visible change or new focal discoloration identified across the dorsal region.'
+      aiObservation: 'No significant visible change identified between the reference and review images in the assessed back region.'
     }
   },
 
-  // 4. IF439 — Right Lower Leg (Faint Mottled Discoloration)
   {
-    id: 'scenario-if439',
-    title: 'IF439 — Right Lower Leg (Faint Mottled Discoloration)',
+    id: 'scenario-if439-01',
+    title: 'IF439 — Right Lower Leg (Localized reddish/purple discoloration below patella)',
     patientRecordId: 'IF439',
     bodyRegion: 'Right Lower Leg',
-    description: 'Post-activity check noting faint mottled discoloration along the lateral patellar border.',
+    refSourceId: 'REF-008',
+    reviewDescription: 'Localized reddish/purple discoloration below the patella/proximal tibial region',
+    imageType: 'abnormal finding',
+    isNew: true,
+    description: 'Comparison of the review image with the reference image shows localized reddish/purple discoloration below the patella/proximal tibial region.',
     referenceDate: '2026-09-12 13:10',
     newImageDate: '2026-09-20 16:30',
-    referenceImage: DEMO_ASSETS.if439.reference,
-    newImage: DEMO_ASSETS.if439.review,
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if439.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if439.review01,
     expectedResult: {
       referenceImageId: 'IF439',
       referenceDate: '2026-09-12 13:10',
-      newImageId: 'IF439-REV-03',
+      newImageId: 'IF439-REV-01',
       newImageDate: '2026-09-20 16:30',
       bodyRegion: 'Right Lower Leg',
-      changeType: 'Visible Bruising-like Appearance',
-      finding: 'Faint mottled discoloration / possible minor contusion',
+      changeType: 'Visible color change / contusion-like discoloration',
+      finding: 'Localized reddish/purple discoloration below the patella/proximal tibial region',
       confidence: 'Moderate',
-      confidenceScore: 0.72,
+      confidenceScore: 0.77,
       candidateFinding: {
         bodyRegion: 'Right Lower Leg',
-        changeType: 'Visible Bruising-like Appearance',
-        finding: 'Faint mottled discoloration / possible minor contusion',
+        changeType: 'Visible color change / contusion-like discoloration',
+        finding: 'Localized reddish/purple discoloration below the patella/proximal tibial region',
         confidence: 'Moderate',
-        confidenceScore: 0.72,
+        confidenceScore: 0.77,
         changeCoordinates: {
-          xPercent: 56.0,
-          yPercent: 53.0,
-          radiusPercent: 11
+          xPercent: 53.1,
+          yPercent: 54.3,
+          radiusPercent: 14
         }
       },
-      aiObservation: 'Reviewing the new picture against reference image IF439, faint mottled discoloration observed near the superior-lateral border of the right knee.',
-      changeCoordinates: {
-        xPercent: 56.0,
-        yPercent: 53.0,
-        radiusPercent: 11
-      }
+      aiObservation: 'Comparison of the review image with the reference image shows localized reddish/purple discoloration below the patella/proximal tibial region.',
+        changeCoordinates: {
+          xPercent: 53.1,
+          yPercent: 54.3,
+          radiusPercent: 14
+        }
     }
   },
 
-  // 5. IF461 — Right Shoulder (Localized Reddish Discoloration)
   {
-    id: 'scenario-if461',
-    title: 'IF461 — Right Shoulder (Localized Reddish Discoloration)',
-    patientRecordId: 'IF461',
-    bodyRegion: 'Right Shoulder',
-    description: 'Post-incident review showing localized reddish skin discoloration across the lateral right shoulder deltoid.',
-    referenceDate: '2026-09-11 14:00',
-    newImageDate: '2026-09-21 11:20',
-    referenceImage: DEMO_ASSETS.if461.reference,
-    newImage: DEMO_ASSETS.if461.review,
+    id: 'scenario-if439-02',
+    title: 'IF439 — Right Lower Leg (Resolving discoloration with softer yellowish-tan appearance)',
+    patientRecordId: 'IF439',
+    bodyRegion: 'Right Lower Leg',
+    refSourceId: 'REF-008',
+    reviewDescription: 'Resolving discoloration with a softer yellowish-tan appearance',
+    imageType: 'abnormal finding',
+    isNew: true,
+    description: 'Comparison of the review image with the reference image shows resolving discoloration with a softer yellowish-tan appearance on the right lower leg.',
+    referenceDate: '2026-09-12 13:10',
+    newImageDate: '2026-09-20 16:40',
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if439.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if439.review02,
     expectedResult: {
-      referenceImageId: 'IF461',
-      referenceDate: '2026-09-11 14:00',
-      newImageId: 'IF461-REV-02',
-      newImageDate: '2026-09-21 11:20',
-      bodyRegion: 'Right Shoulder',
-      changeType: 'Color / Skin Appearance Change',
-      finding: 'Localized reddish discoloration / contusion-like mark',
-      confidence: 'Moderate',
-      confidenceScore: 0.81,
-      candidateFinding: {
-        bodyRegion: 'Right Shoulder',
-        changeType: 'Color / Skin Appearance Change',
-        finding: 'Localized reddish discoloration / contusion-like mark',
-        confidence: 'Moderate',
-        confidenceScore: 0.81,
-        changeCoordinates: {
-          xPercent: 52.0,
-          yPercent: 46.0,
-          radiusPercent: 12
-        }
-      },
-      aiObservation: 'Reviewing the new picture against reference image IF461, there is a localized reddish discoloration across the lateral aspect of the right shoulder consistent with a minor contusion-like appearance. Surrounding skin remains intact without open breach.',
-      changeCoordinates: {
-        xPercent: 52.0,
-        yPercent: 46.0,
-        radiusPercent: 12
-      }
-    }
-  },
-
-  // 6. IF468 — Left Upper Arm (Faint Mottled Discoloration)
-  {
-    id: 'scenario-if468',
-    title: 'IF468 — Left Upper Arm (Faint Mottled Discoloration)',
-    patientRecordId: 'IF468',
-    bodyRegion: 'Left Upper Arm',
-    description: 'Routine wellbeing check identifying faint localized mottled skin discoloration on the lateral upper arm.',
-    referenceDate: '2026-09-13 10:30',
-    newImageDate: '2026-09-21 15:45',
-    referenceImage: DEMO_ASSETS.if468.reference,
-    newImage: DEMO_ASSETS.if468.review,
-    expectedResult: {
-      referenceImageId: 'IF468',
-      referenceDate: '2026-09-13 10:30',
-      newImageId: 'IF468-REV-01',
-      newImageDate: '2026-09-21 15:45',
-      bodyRegion: 'Left Upper Arm',
-      changeType: 'Visible Bruising-like Appearance',
-      finding: 'Faint localized mottled discoloration',
+      referenceImageId: 'IF439',
+      referenceDate: '2026-09-12 13:10',
+      newImageId: 'IF439-REV-02',
+      newImageDate: '2026-09-20 16:40',
+      bodyRegion: 'Right Lower Leg',
+      changeType: 'Localized skin-color variation',
+      finding: 'Resolving discoloration with a softer yellowish-tan appearance',
       confidence: 'Moderate',
       confidenceScore: 0.74,
       candidateFinding: {
-        bodyRegion: 'Left Upper Arm',
-        changeType: 'Visible Bruising-like Appearance',
-        finding: 'Faint localized mottled discoloration',
+        bodyRegion: 'Right Lower Leg',
+        changeType: 'Localized skin-color variation',
+        finding: 'Resolving discoloration with a softer yellowish-tan appearance',
         confidence: 'Moderate',
         confidenceScore: 0.74,
         changeCoordinates: {
-          xPercent: 49.0,
-          yPercent: 50.0,
-          radiusPercent: 11
+          xPercent: 52.5,
+          yPercent: 55.0,
+          radiusPercent: 13
         }
       },
-      aiObservation: 'Reviewing the new picture against reference image IF468, faint localized mottled discoloration is noted on the lateral left upper arm that was not visible on baseline capture. Skin surface remains intact without edema.',
-      changeCoordinates: {
-        xPercent: 49.0,
-        yPercent: 50.0,
-        radiusPercent: 11
-      }
+      aiObservation: 'Comparison of the review image with the reference image shows resolving discoloration with a softer yellowish-tan appearance on the right lower leg.',
+        changeCoordinates: {
+          xPercent: 52.5,
+          yPercent: 55.0,
+          radiusPercent: 13
+        }
     }
   },
 
-  // 7. IF472 — Lower Back (Routine Check / No Significant Change)
   {
-    id: 'scenario-if472',
-    title: 'IF472 — Lower Back (Routine Check / No Significant Change)',
-    patientRecordId: 'IF472',
-    bodyRegion: 'Lower Back',
-    description: 'Routine scheduled documentation; reference and follow-up images exhibit consistent, intact skin presentation without new markings.',
-    referenceDate: '2026-09-09 09:15',
-    newImageDate: '2026-09-21 13:30',
-    referenceImage: DEMO_ASSETS.if472.reference,
-    newImage: DEMO_ASSETS.if472.review,
+    id: 'scenario-if460-01',
+    title: 'IF460 — Foot (Mild localized erythema/redness on lateral dorsum)',
+    patientRecordId: 'IF460',
+    bodyRegion: 'Foot',
+    refSourceId: 'REF-011',
+    reviewDescription: 'Mild localized erythema/redness on the lateral dorsum',
+    imageType: 'abnormal finding',
+    isNew: true,
+    description: 'Comparison of the review image with the reference image shows mild localized erythema/redness on the lateral dorsum of the foot.',
+    referenceDate: '2026-09-11 14:00',
+    newImageDate: '2026-09-21 11:20',
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if460.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if460.review01,
     expectedResult: {
-      referenceImageId: 'IF472',
-      referenceDate: '2026-09-09 09:15',
-      newImageId: 'IF472-REV-02',
-      newImageDate: '2026-09-21 13:30',
-      bodyRegion: 'Lower Back',
-      changeType: 'No Significant Visible Change',
-      finding: 'No significant visible change identified',
+      referenceImageId: 'IF460',
+      referenceDate: '2026-09-11 14:00',
+      newImageId: 'IF460-REV-01',
+      newImageDate: '2026-09-21 11:20',
+      bodyRegion: 'Foot',
+      changeType: 'Localized erythema / skin appearance change',
+      finding: 'Mild localized erythema/redness on the lateral dorsum',
+      confidence: 'Moderate',
+      confidenceScore: 0.82,
+      candidateFinding: {
+        bodyRegion: 'Foot',
+        changeType: 'Localized erythema / skin appearance change',
+        finding: 'Mild localized erythema/redness on the lateral dorsum',
+        confidence: 'Moderate',
+        confidenceScore: 0.82,
+        changeCoordinates: {
+          xPercent: 47.5,
+          yPercent: 46.5,
+          radiusPercent: 12
+        }
+      },
+      aiObservation: 'Comparison of the review image with the reference image shows mild localized erythema/redness on the lateral dorsum of the foot.',
+        changeCoordinates: {
+          xPercent: 47.5,
+          yPercent: 46.5,
+          radiusPercent: 12
+        }
+    }
+  },
+
+  {
+    id: 'scenario-if460-02',
+    title: 'IF460 — Foot (Mild localized swelling/skin-color change without open wound)',
+    patientRecordId: 'IF460',
+    bodyRegion: 'Foot',
+    refSourceId: 'REF-011',
+    reviewDescription: 'Mild localized swelling/skin-color change without an open wound',
+    imageType: 'abnormal finding',
+    isNew: true,
+    description: 'Comparison of the review image with the reference image shows mild localized swelling and skin-color change without an open wound on the dorsal foot.',
+    referenceDate: '2026-09-11 14:00',
+    newImageDate: '2026-09-21 11:25',
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if460.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if460.review02,
+    expectedResult: {
+      referenceImageId: 'IF460',
+      referenceDate: '2026-09-11 14:00',
+      newImageId: 'IF460-REV-02',
+      newImageDate: '2026-09-21 11:25',
+      bodyRegion: 'Foot',
+      changeType: 'Localized swelling/contour change',
+      finding: 'Mild localized swelling/skin-color change without an open wound',
+      confidence: 'Moderate',
+      confidenceScore: 0.8,
+      candidateFinding: {
+        bodyRegion: 'Foot',
+        changeType: 'Localized swelling/contour change',
+        finding: 'Mild localized swelling/skin-color change without an open wound',
+        confidence: 'Moderate',
+        confidenceScore: 0.8,
+        changeCoordinates: {
+          xPercent: 48.0,
+          yPercent: 48.2,
+          radiusPercent: 14
+        }
+      },
+      aiObservation: 'Comparison of the review image with the reference image shows mild localized swelling and skin-color change without an open wound on the dorsal foot.',
+        changeCoordinates: {
+          xPercent: 48.0,
+          yPercent: 48.2,
+          radiusPercent: 14
+        }
+    }
+  },
+
+  {
+    id: 'scenario-if460-03',
+    title: 'IF460 — Foot (Normal / unchanged)',
+    patientRecordId: 'IF460',
+    bodyRegion: 'Foot',
+    refSourceId: 'REF-011',
+    reviewDescription: 'Normal/no significant visible change',
+    imageType: 'normal / unchanged',
+    isNew: false,
+    description: 'No significant visible change identified between the reference and review images in the assessed foot region.',
+    referenceDate: '2026-09-11 14:00',
+    newImageDate: '2026-09-21 11:35',
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if460.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if460.review03,
+    expectedResult: {
+      referenceImageId: 'IF460',
+      referenceDate: '2026-09-11 14:00',
+      newImageId: 'IF460-REV-03',
+      newImageDate: '2026-09-21 11:35',
+      bodyRegion: 'Foot',
+      changeType: 'No significant visible change',
+      finding: 'Normal/no significant visible change',
       confidence: 'High',
       confidenceScore: 0.95,
       candidateFinding: {
-        bodyRegion: 'Lower Back',
-        changeType: 'No Significant Visible Change',
-        finding: 'No significant visible change identified',
+        bodyRegion: 'Foot',
+        changeType: 'No significant visible change',
+        finding: 'Normal/no significant visible change',
         confidence: 'High',
         confidenceScore: 0.95
       },
-      aiObservation: 'Reviewing the new picture against reference image IF472, no significant visible change or new discoloration identified across the lower lumbar and dorsal region. Cutaneous presentation appears stable.'
+      aiObservation: 'No significant visible change identified between the reference and review images in the assessed foot region.'
     }
   },
 
-  // 8. IF477 — Right Knee (Routine Check / No Significant Change)
   {
-    id: 'scenario-if477',
-    title: 'IF477 — Right Knee (Routine Check / No Significant Change)',
-    patientRecordId: 'IF477',
-    bodyRegion: 'Right Knee',
-    description: 'Post-recreational activity check; anatomical landmarks and surface skin texture remain unremarkable compared to baseline.',
+    id: 'scenario-if461-01',
+    title: 'IF461 — Foot (Normal / unchanged)',
+    patientRecordId: 'IF461',
+    bodyRegion: 'Foot',
+    refSourceId: 'REF-012',
+    reviewDescription: 'Normal/no significant visible change',
+    imageType: 'normal / unchanged',
+    isNew: false,
+    description: 'No significant visible change identified between the reference and review images in the assessed foot region.',
+    referenceDate: '2026-09-13 10:30',
+    newImageDate: '2026-09-21 15:45',
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if461.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if461.review01,
+    expectedResult: {
+      referenceImageId: 'IF461',
+      referenceDate: '2026-09-13 10:30',
+      newImageId: 'IF461-REV-01',
+      newImageDate: '2026-09-21 15:45',
+      bodyRegion: 'Foot',
+      changeType: 'No significant visible change',
+      finding: 'Normal/no significant visible change',
+      confidence: 'High',
+      confidenceScore: 0.96,
+      candidateFinding: {
+        bodyRegion: 'Foot',
+        changeType: 'No significant visible change',
+        finding: 'Normal/no significant visible change',
+        confidence: 'High',
+        confidenceScore: 0.96
+      },
+      aiObservation: 'No significant visible change identified between the reference and review images in the assessed foot region.'
+    }
+  },
+
+  {
+    id: 'scenario-if462-01',
+    title: 'IF462 — Upper Arm (Subtle localized skin-color variation on lateral upper arm)',
+    patientRecordId: 'IF462',
+    bodyRegion: 'Upper Arm',
+    refSourceId: 'REF-001',
+    reviewDescription: 'Subtle localized skin-color variation on the lateral upper arm',
+    imageType: 'abnormal finding',
+    isNew: true,
+    description: 'Comparison of the review image with the reference image shows subtle localized skin-color variation on the upper arm / lateral brachium.',
+    referenceDate: '2026-09-09 09:15',
+    newImageDate: '2026-09-21 13:30',
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if462.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if462.review01,
+    expectedResult: {
+      referenceImageId: 'IF462',
+      referenceDate: '2026-09-09 09:15',
+      newImageId: 'IF462-REV-01',
+      newImageDate: '2026-09-21 13:30',
+      bodyRegion: 'Upper Arm',
+      changeType: 'Localized skin-color variation',
+      finding: 'Subtle localized skin-color variation on the lateral upper arm',
+      confidence: 'Moderate',
+      confidenceScore: 0.79,
+      candidateFinding: {
+        bodyRegion: 'Upper Arm',
+        changeType: 'Localized skin-color variation',
+        finding: 'Subtle localized skin-color variation on the lateral upper arm',
+        confidence: 'Moderate',
+        confidenceScore: 0.79,
+        changeCoordinates: {
+          xPercent: 49.1,
+          yPercent: 58.6,
+          radiusPercent: 10
+        }
+      },
+      aiObservation: 'Comparison of the review image with the reference image shows subtle localized skin-color variation on the upper arm / lateral brachium.',
+        changeCoordinates: {
+          xPercent: 49.1,
+          yPercent: 58.6,
+          radiusPercent: 10
+        }
+    }
+  },
+
+  {
+    id: 'scenario-if462-02',
+    title: 'IF462 — Upper Arm (Mild localized reddish/purple discoloration)',
+    patientRecordId: 'IF462',
+    bodyRegion: 'Upper Arm',
+    refSourceId: 'REF-001',
+    reviewDescription: 'Mild localized reddish/purple discoloration',
+    imageType: 'abnormal finding',
+    isNew: true,
+    description: 'Comparison of the review image with the reference image shows mild localized reddish/purple discoloration on the upper arm.',
+    referenceDate: '2026-09-09 09:15',
+    newImageDate: '2026-09-21 13:35',
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if462.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if462.review02,
+    expectedResult: {
+      referenceImageId: 'IF462',
+      referenceDate: '2026-09-09 09:15',
+      newImageId: 'IF462-REV-02',
+      newImageDate: '2026-09-21 13:35',
+      bodyRegion: 'Upper Arm',
+      changeType: 'Visible color change / contusion-like discoloration',
+      finding: 'Mild localized reddish/purple discoloration',
+      confidence: 'Moderate',
+      confidenceScore: 0.83,
+      candidateFinding: {
+        bodyRegion: 'Upper Arm',
+        changeType: 'Visible color change / contusion-like discoloration',
+        finding: 'Mild localized reddish/purple discoloration',
+        confidence: 'Moderate',
+        confidenceScore: 0.83,
+        changeCoordinates: {
+          xPercent: 50.2,
+          yPercent: 56.4,
+          radiusPercent: 11
+        }
+      },
+      aiObservation: 'Comparison of the review image with the reference image shows mild localized reddish/purple discoloration on the upper arm.',
+        changeCoordinates: {
+          xPercent: 50.2,
+          yPercent: 56.4,
+          radiusPercent: 11
+        }
+    }
+  },
+
+  {
+    id: 'scenario-if463-01',
+    title: 'IF463 — Lower Leg (Resolving yellowish-tan discoloration on anterior tibial shin)',
+    patientRecordId: 'IF463',
+    bodyRegion: 'Lower Leg',
+    refSourceId: 'REF-010',
+    reviewDescription: 'Resolving yellowish-tan discoloration on the anterior tibial shin',
+    imageType: 'abnormal finding',
+    isNew: true,
+    description: 'Comparison of the review image with the reference image shows subtle resolving yellowish-tan discoloration on the anterior tibial shin.',
     referenceDate: '2026-09-15 11:45',
     newImageDate: '2026-09-21 16:15',
-    referenceImage: DEMO_ASSETS.if477.reference,
-    newImage: DEMO_ASSETS.if477.review,
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if463.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if463.review01,
     expectedResult: {
-      referenceImageId: 'IF477',
+      referenceImageId: 'IF463',
       referenceDate: '2026-09-15 11:45',
-      newImageId: 'IF477-REV-01',
+      newImageId: 'IF463-REV-01',
       newImageDate: '2026-09-21 16:15',
-      bodyRegion: 'Right Knee',
-      changeType: 'No Significant Visible Change',
-      finding: 'No significant visible change identified',
-      confidence: 'High',
-      confidenceScore: 0.92,
+      bodyRegion: 'Lower Leg',
+      changeType: 'Localized skin-color variation',
+      finding: 'Resolving yellowish-tan discoloration on the anterior tibial shin',
+      confidence: 'Moderate',
+      confidenceScore: 0.75,
       candidateFinding: {
-        bodyRegion: 'Right Knee',
-        changeType: 'No Significant Visible Change',
-        finding: 'No significant visible change identified',
-        confidence: 'High',
-        confidenceScore: 0.92
+        bodyRegion: 'Lower Leg',
+        changeType: 'Localized skin-color variation',
+        finding: 'Resolving yellowish-tan discoloration on the anterior tibial shin',
+        confidence: 'Moderate',
+        confidenceScore: 0.75,
+        changeCoordinates: {
+          xPercent: 52.1,
+          yPercent: 53.0,
+          radiusPercent: 12
+        }
       },
-      aiObservation: 'Reviewing the new picture against reference image IF477, no significant visible change identified across the right anterior patellar region. Joint contour and cutaneous surface remain consistent with baseline.'
+      aiObservation: 'Comparison of the review image with the reference image shows subtle resolving yellowish-tan discoloration on the anterior tibial shin.',
+        changeCoordinates: {
+          xPercent: 52.1,
+          yPercent: 53.0,
+          radiusPercent: 12
+        }
+    }
+  },
+
+  {
+    id: 'scenario-if463-02',
+    title: 'IF463 — Lower Leg (More subtle/resolved discoloration with minimal visible residual change)',
+    patientRecordId: 'IF463',
+    bodyRegion: 'Lower Leg',
+    refSourceId: 'REF-010',
+    reviewDescription: 'More subtle/resolved discoloration with minimal visible residual change',
+    imageType: 'abnormal finding',
+    isNew: true,
+    description: 'Comparison of the review image with the reference image shows more subtle/resolved discoloration with minimal visible residual change on the lower leg.',
+    referenceDate: '2026-09-15 11:45',
+    newImageDate: '2026-09-21 16:25',
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if463.reference,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if463.review02,
+    expectedResult: {
+      referenceImageId: 'IF463',
+      referenceDate: '2026-09-15 11:45',
+      newImageId: 'IF463-REV-02',
+      newImageDate: '2026-09-21 16:25',
+      bodyRegion: 'Lower Leg',
+      changeType: 'Localized skin-color variation',
+      finding: 'More subtle/resolved discoloration with minimal visible residual change',
+      confidence: 'Moderate',
+      confidenceScore: 0.72,
+      candidateFinding: {
+        bodyRegion: 'Lower Leg',
+        changeType: 'Localized skin-color variation',
+        finding: 'More subtle/resolved discoloration with minimal visible residual change',
+        confidence: 'Moderate',
+        confidenceScore: 0.72,
+        changeCoordinates: {
+          xPercent: 51.5,
+          yPercent: 54.0,
+          radiusPercent: 10
+        }
+      },
+      aiObservation: 'Comparison of the review image with the reference image shows more subtle/resolved discoloration with minimal visible residual change on the lower leg.',
+        changeCoordinates: {
+          xPercent: 51.5,
+          yPercent: 54.0,
+          radiusPercent: 10
+        }
     }
   }
 ];
@@ -359,7 +752,9 @@ export const MOCK_PATIENTS: PatientRecord[] = [
     lastCheckDate: '2026-09-14 09:30',
     activeStatus: 'active',
     defaultRegion: 'Left Shoulder',
-    availableBodyRegions: ['Left Shoulder']
+    availableBodyRegions: ['Left Shoulder'],
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if456.reference,
+    reviewImage: BODY_CHECK_IMAGE_ASSETS.if456.review
   },
   {
     id: 'IF455',
@@ -370,7 +765,9 @@ export const MOCK_PATIENTS: PatientRecord[] = [
     lastCheckDate: '2026-09-10 11:00',
     activeStatus: 'active',
     defaultRegion: 'Right Forearm',
-    availableBodyRegions: ['Right Forearm']
+    availableBodyRegions: ['Right Forearm'],
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if455.reference,
+    reviewImage: BODY_CHECK_IMAGE_ASSETS.if455.review
   },
   {
     id: 'IF452',
@@ -381,7 +778,9 @@ export const MOCK_PATIENTS: PatientRecord[] = [
     lastCheckDate: '2026-09-08 16:20',
     activeStatus: 'active',
     defaultRegion: 'Back',
-    availableBodyRegions: ['Back']
+    availableBodyRegions: ['Back'],
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if452.reference,
+    reviewImage: BODY_CHECK_IMAGE_ASSETS.if452.review
   },
   {
     id: 'IF439',
@@ -392,7 +791,22 @@ export const MOCK_PATIENTS: PatientRecord[] = [
     lastCheckDate: '2026-09-12 13:10',
     activeStatus: 'active',
     defaultRegion: 'Right Lower Leg',
-    availableBodyRegions: ['Right Lower Leg']
+    availableBodyRegions: ['Right Lower Leg'],
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if439.reference,
+    reviewImage: BODY_CHECK_IMAGE_ASSETS.if439.review
+  },
+  {
+    id: 'IF460',
+    name: 'Record IF-460',
+    unit: 'Residential Unit C (Health & Safety)',
+    dateOfBirth: '2009-06-14',
+    primaryCaregiver: 'Sarah Mitchell, Reviewer',
+    lastCheckDate: '2026-09-11 14:00',
+    activeStatus: 'active',
+    defaultRegion: 'Foot',
+    availableBodyRegions: ['Foot'],
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if460.reference,
+    reviewImage: BODY_CHECK_IMAGE_ASSETS.if460.review
   },
   {
     id: 'IF461',
@@ -400,43 +814,38 @@ export const MOCK_PATIENTS: PatientRecord[] = [
     unit: 'Residential Unit C (Health & Safety)',
     dateOfBirth: '2009-07-14',
     primaryCaregiver: 'Sarah Mitchell, Reviewer',
-    lastCheckDate: '2026-09-11 14:00',
+    lastCheckDate: '2026-09-13 10:30',
     activeStatus: 'active',
-    defaultRegion: 'Right Shoulder',
-    availableBodyRegions: ['Right Shoulder']
+    defaultRegion: 'Foot',
+    availableBodyRegions: ['Foot'],
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if461.reference,
+    reviewImage: BODY_CHECK_IMAGE_ASSETS.if461.review
   },
   {
-    id: 'IF468',
-    name: 'Record IF-468',
+    id: 'IF462',
+    name: 'Record IF-462',
     unit: 'Transitional Care Unit 2',
     dateOfBirth: '2010-02-18',
     primaryCaregiver: 'Senior Practitioner O. Bailey',
-    lastCheckDate: '2026-09-13 10:30',
+    lastCheckDate: '2026-09-09 09:15',
     activeStatus: 'active',
-    defaultRegion: 'Left Upper Arm',
-    availableBodyRegions: ['Left Upper Arm']
+    defaultRegion: 'Upper Arm',
+    availableBodyRegions: ['Upper Arm'],
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if462.reference,
+    reviewImage: BODY_CHECK_IMAGE_ASSETS.if462.review
   },
   {
-    id: 'IF472',
-    name: 'Record IF-472',
+    id: 'IF463',
+    name: 'Record IF-463',
     unit: 'Residential Unit A (Intake Assessment)',
     dateOfBirth: '2008-09-05',
     primaryCaregiver: 'Case Worker J. Patel',
-    lastCheckDate: '2026-09-09 09:15',
-    activeStatus: 'active',
-    defaultRegion: 'Lower Back',
-    availableBodyRegions: ['Lower Back']
-  },
-  {
-    id: 'IF477',
-    name: 'Record IF-477',
-    unit: 'Care Support Wing',
-    dateOfBirth: '2009-11-22',
-    primaryCaregiver: 'Case Officer Miller',
     lastCheckDate: '2026-09-15 11:45',
     activeStatus: 'active',
-    defaultRegion: 'Right Knee',
-    availableBodyRegions: ['Right Knee']
+    defaultRegion: 'Lower Leg',
+    availableBodyRegions: ['Lower Leg'],
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if463.reference,
+    reviewImage: BODY_CHECK_IMAGE_ASSETS.if463.review
   },
   {
     id: 'IF500',
@@ -447,56 +856,59 @@ export const MOCK_PATIENTS: PatientRecord[] = [
     lastCheckDate: '2026-09-16 10:00',
     activeStatus: 'active',
     defaultRegion: 'Left Shoulder',
-    availableBodyRegions: ['Left Shoulder', 'Right Forearm', 'Upper Back']
+    availableBodyRegions: ['Left Shoulder', 'Right Forearm', 'Upper Back'],
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if456.reference,
+    reviewImage: BODY_CHECK_IMAGE_ASSETS.if456.review
   }
 ];
 
-// Seeded Initial Checks with comprehensive audit trail
+// Seeded Initial Checks representing active operational states across the workflow
 export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
-  // 1. Confirmed: IF455
+  // 1. Confirmed Completed Scan: IF455 (Right Forearm)
   {
     id: 'BC-2026-0889',
     patientRecordId: 'IF455',
     patientName: 'Record IF-455',
-    referenceImage: DEMO_ASSETS.if455.reference,
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if455.reference,
     referenceImageId: 'IF455',
     referenceDate: '2026-09-10 11:00',
-    newImage: DEMO_ASSETS.if455.review,
-    newImageId: 'IF455-REV-04',
-    newImageDate: '2026-09-21 10:45',
+    newImage: BODY_CHECK_IMAGE_ASSETS.if455.review01,
+    newImageId: 'IF455-REV-01',
+    newImageDate: '2026-09-21 16:45',
     bodyRegion: 'Right Forearm',
-    changeType: 'Tissue / Skin Appearance Difference',
-    finding: 'Linear surface erythema / abrasion-like marking',
+    changeType: 'Visible color change / contusion-like discoloration',
+    finding: 'Reddish-purple localized bruising over the mid-shaft volar forearm',
     confidence: 'High',
     confidenceScore: 0.89,
     candidateFinding: {
       bodyRegion: 'Right Forearm',
-      changeType: 'Tissue / Skin Appearance Difference',
-      finding: 'Linear surface erythema / abrasion-like marking',
+      changeType: 'Visible color change / contusion-like discoloration',
+      finding: 'Reddish-purple localized bruising over the mid-shaft volar forearm',
       confidence: 'High',
       confidenceScore: 0.89,
       changeCoordinates: {
-        xPercent: 54.0,
-        yPercent: 55.0,
-        radiusPercent: 12
+        xPercent: 46.8,
+        yPercent: 49.4,
+        radiusPercent: 10
       }
     },
-    aiObservation: 'Reviewing the new picture against reference image IF455, superficial linear erythema is noted across the distal volar aspect of the right forearm without visible swelling.',
-    finalObservation: 'Reviewing the new picture against reference image IF455, superficial linear erythema is noted across the distal volar aspect of the right forearm without visible swelling. Skin is unbroken.',
+    aiObservation: 'Comparison of the review image with the reference image shows reddish-purple localized bruising over the mid-shaft volar forearm.',
+    finalObservation: 'Confirmed localized bruising over mid-shaft volar forearm. Skin intact with no open abrasion. Cleansed and scheduled for morning reassessment.',
     status: 'confirmed',
     reviewer: 'Sarah Mitchell',
     reviewerRole: 'Reviewer',
-    confirmedAt: '2026-09-21 11:05',
+    confirmedAt: '2026-09-21 16:55',
+    updatedAt: '2026-09-21 16:55',
     reviewerNotes: 'Surface cleansed. Routine reassessment scheduled for morning rounds.',
     changeCoordinates: {
-      xPercent: 54.0,
-      yPercent: 55.0,
-      radiusPercent: 12
+      xPercent: 46.8,
+      yPercent: 49.4,
+      radiusPercent: 10
     },
     auditTrail: [
       {
         id: 'aud-889-4',
-        timestamp: '2026-09-21 11:05',
+        timestamp: '2026-09-21 16:55',
         actor: 'Sarah Mitchell',
         actorRole: 'Reviewer',
         action: 'Observation confirmed',
@@ -504,19 +916,19 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
       },
       {
         id: 'aud-889-3',
-        timestamp: '2026-09-21 10:55',
+        timestamp: '2026-09-21 16:48',
         actor: 'System',
         actorRole: 'Comparative Analysis',
         action: 'Comparative analysis completed',
-        details: 'Candidate finding identified: Linear surface erythema / abrasion-like marking (High confidence).'
+        details: 'Candidate finding identified: Reddish-purple localized bruising over the mid-shaft volar forearm (High confidence).'
       },
       {
         id: 'aud-889-2',
-        timestamp: '2026-09-21 10:45',
+        timestamp: '2026-09-21 16:45',
         actor: 'Sarah Mitchell',
         actorRole: 'Reviewer',
         action: 'Review check initiated',
-        details: 'New review image IF455-REV-04 registered for Right Forearm.'
+        details: 'New review image IF455-REV-01 registered for Right Forearm.'
       },
       {
         id: 'aud-889-1',
@@ -524,141 +936,195 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
         actor: 'System',
         actorRole: 'Baseline Intake',
         action: 'Baseline image registered',
-        details: 'Reference image IF455 established.'
+        details: 'Reference image IF455 established for Right Forearm.'
       }
     ]
   },
 
-  // 2. Confirmed: IF461 (Right Shoulder)
+  // 2. Ready for Review (AI Draft Ready): IF460 (Foot)
   {
-    id: 'BC-2026-0895',
-    patientRecordId: 'IF461',
-    patientName: 'Record IF-461',
-    referenceImage: DEMO_ASSETS.if461.reference,
-    referenceImageId: 'IF461',
+    id: 'BC-2026-0847',
+    patientRecordId: 'IF460',
+    patientName: 'Record IF-460',
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if460.reference,
+    referenceImageId: 'IF460',
     referenceDate: '2026-09-11 14:00',
-    newImage: DEMO_ASSETS.if461.review,
-    newImageId: 'IF461-REV-02',
-    newImageDate: '2026-09-21 11:20',
-    bodyRegion: 'Right Shoulder',
-    changeType: 'Color / Skin Appearance Change',
-    finding: 'Localized reddish discoloration / contusion-like mark',
+    newImage: BODY_CHECK_IMAGE_ASSETS.if460.review01,
+    newImageId: 'IF460-REV-01',
+    newImageDate: '2026-09-21 15:30',
+    bodyRegion: 'Foot',
+    changeType: 'Localized erythema / skin appearance change',
+    finding: 'Mild localized erythema/redness on the lateral dorsum',
     confidence: 'Moderate',
-    confidenceScore: 0.81,
+    confidenceScore: 0.82,
     candidateFinding: {
-      bodyRegion: 'Right Shoulder',
-      changeType: 'Color / Skin Appearance Change',
-      finding: 'Localized reddish discoloration / contusion-like mark',
+      bodyRegion: 'Foot',
+      changeType: 'Localized erythema / skin appearance change',
+      finding: 'Mild localized erythema/redness on the lateral dorsum',
       confidence: 'Moderate',
-      confidenceScore: 0.81,
+      confidenceScore: 0.82,
       changeCoordinates: {
-        xPercent: 52.0,
-        yPercent: 46.0,
+        xPercent: 47.5,
+        yPercent: 46.5,
         radiusPercent: 12
       }
     },
-    aiObservation: 'Reviewing the new picture against reference image IF461, there is a localized reddish discoloration across the lateral aspect of the right shoulder consistent with a minor contusion-like appearance. Surrounding skin remains intact without open breach.',
-    finalObservation: 'Reviewing the new picture against reference image IF461, localized reddish discoloration is present on the lateral right shoulder deltoid. Consistent with minor surface contusion. No edema.',
-    status: 'confirmed',
-    reviewer: 'Sarah Mitchell',
-    reviewerRole: 'Reviewer',
-    confirmedAt: '2026-09-21 11:40',
-    reviewerNotes: 'Documented in daily log. Monitoring comfort.',
+    aiObservation: 'Comparison of the review image with the reference image shows a localized area of superficial redness on the lateral dorsal foot.',
+    finalObservation: '',
+    status: 'ready_for_review',
+    updatedAt: '2026-09-21 15:35',
     changeCoordinates: {
-      xPercent: 52.0,
-      yPercent: 46.0,
+      xPercent: 47.5,
+      yPercent: 46.5,
       radiusPercent: 12
     },
     auditTrail: [
       {
-        id: 'aud-895-4',
-        timestamp: '2026-09-21 11:40',
-        actor: 'Sarah Mitchell',
-        actorRole: 'Reviewer',
-        action: 'Observation confirmed',
-        details: 'Observation confirmed with note: "Documented in daily log. Monitoring comfort."'
-      },
-      {
-        id: 'aud-895-3',
-        timestamp: '2026-09-21 11:28',
+        id: 'aud-847-3',
+        timestamp: '2026-09-21 15:35',
         actor: 'System',
         actorRole: 'Comparative Analysis',
         action: 'Comparative analysis completed',
-        details: 'Candidate finding identified: Localized reddish discoloration / contusion-like mark (Moderate confidence).'
+        details: 'Candidate finding identified: Mild localized erythema/redness on the lateral dorsum (Moderate confidence). AI draft generated.'
       },
       {
-        id: 'aud-895-2',
-        timestamp: '2026-09-21 11:20',
+        id: 'aud-847-2',
+        timestamp: '2026-09-21 15:30',
         actor: 'Sarah Mitchell',
         actorRole: 'Reviewer',
         action: 'Review check initiated',
-        details: 'New review image IF461-REV-02 registered for Right Shoulder.'
+        details: 'New review image IF460-REV-01 registered for Foot.'
       },
       {
-        id: 'aud-895-1',
+        id: 'aud-847-1',
         timestamp: '2026-09-11 14:00',
         actor: 'System',
         actorRole: 'Baseline Intake',
         action: 'Baseline image registered',
-        details: 'Reference image IF461 established.'
+        details: 'Reference image IF460 established for Foot.'
       }
     ]
   },
 
-  // 3. Confirmed Routine Check: IF452 (Back, No change)
+  // 3. Pending Human Review / Ready for Review: IF462 (Upper Arm)
+  {
+    id: 'BC-2026-0898',
+    patientRecordId: 'IF462',
+    patientName: 'Record IF-462',
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if462.reference,
+    referenceImageId: 'IF462',
+    referenceDate: '2026-09-09 09:15',
+    newImage: BODY_CHECK_IMAGE_ASSETS.if462.review01,
+    newImageId: 'IF462-REV-01',
+    newImageDate: '2026-09-21 14:15',
+    bodyRegion: 'Upper Arm',
+    changeType: 'Superficial skin-surface change',
+    finding: 'Subtle localized skin-color variation on the lateral upper arm',
+    confidence: 'Moderate',
+    confidenceScore: 0.79,
+    candidateFinding: {
+      bodyRegion: 'Upper Arm',
+      changeType: 'Superficial skin-surface change',
+      finding: 'Subtle localized skin-color variation on the lateral upper arm',
+      confidence: 'Moderate',
+      confidenceScore: 0.79,
+      changeCoordinates: {
+        xPercent: 49.1,
+        yPercent: 58.6,
+        radiusPercent: 10
+      }
+    },
+    aiObservation: 'Comparison of the review image with the reference image shows subtle localized skin-color variation on the lateral upper arm.',
+    finalObservation: '',
+    status: 'ready_for_review',
+    updatedAt: '2026-09-21 14:20',
+    changeCoordinates: {
+      xPercent: 49.1,
+      yPercent: 58.6,
+      radiusPercent: 10
+    },
+    auditTrail: [
+      {
+        id: 'aud-898-3',
+        timestamp: '2026-09-21 14:20',
+        actor: 'System',
+        actorRole: 'Comparative Analysis',
+        action: 'Comparative analysis completed',
+        details: 'Candidate finding identified: Subtle localized skin-color variation on the lateral upper arm (Moderate confidence). AI draft generated.'
+      },
+      {
+        id: 'aud-898-2',
+        timestamp: '2026-09-21 14:15',
+        actor: 'Senior Practitioner O. Bailey',
+        actorRole: 'Reviewer',
+        action: 'Review check initiated',
+        details: 'New review image IF462-REV-01 registered for Upper Arm.'
+      },
+      {
+        id: 'aud-898-1',
+        timestamp: '2026-09-09 09:15',
+        actor: 'System',
+        actorRole: 'Baseline Intake',
+        action: 'Baseline image registered',
+        details: 'Reference image IF462 established for Upper Arm.'
+      }
+    ]
+  },
+
+  // 4. Not Analyzed (Baseline only, No Review Image Selected): IF456 (Left Shoulder)
+  {
+    id: 'BC-2026-0895',
+    patientRecordId: 'IF456',
+    patientName: 'Record IF-456',
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if456.reference,
+    referenceImageId: 'IF456',
+    referenceDate: '2026-09-14 09:30',
+    newImage: '',
+    newImageId: '',
+    newImageDate: '',
+    bodyRegion: 'Left Shoulder',
+    finding: '',
+    aiObservation: '',
+    finalObservation: '',
+    status: 'not_analyzed',
+    updatedAt: '2026-09-14 09:30',
+    auditTrail: [
+      {
+        id: 'aud-895-1',
+        timestamp: '2026-09-14 09:30',
+        actor: 'System',
+        actorRole: 'Baseline Intake',
+        action: 'Baseline image registered',
+        details: 'Reference image IF456 established for Left Shoulder.'
+      }
+    ]
+  },
+
+  // 5. Ready to Analyze (Image Selected, Analysis Pending): IF452 (Back)
   {
     id: 'BC-2026-0872',
     patientRecordId: 'IF452',
     patientName: 'Record IF-452',
-    referenceImage: DEMO_ASSETS.if452.reference,
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if452.reference,
     referenceImageId: 'IF452',
     referenceDate: '2026-09-08 16:20',
-    newImage: DEMO_ASSETS.if452.review,
+    newImage: BODY_CHECK_IMAGE_ASSETS.if452.review01,
     newImageId: 'IF452-REV-01',
-    newImageDate: '2026-09-21 15:00',
+    newImageDate: '2026-09-21 11:50',
     bodyRegion: 'Back',
-    changeType: 'No Significant Visible Change',
-    finding: 'No significant visible change identified',
-    confidence: 'High',
-    confidenceScore: 0.94,
-    candidateFinding: {
-      bodyRegion: 'Back',
-      changeType: 'No Significant Visible Change',
-      finding: 'No significant visible change identified',
-      confidence: 'High',
-      confidenceScore: 0.94
-    },
-    aiObservation: 'Reviewing the new picture against reference image IF452, no significant visible change or new focal discoloration identified across the dorsal region.',
-    finalObservation: 'Reviewing the new picture against reference image IF452, no significant visible change or new focal discoloration identified across the dorsal region. Normal presentation.',
-    status: 'confirmed',
-    reviewer: 'Dr. Marcus Vance',
-    reviewerRole: 'Consulting Physician',
-    confirmedAt: '2026-09-21 15:30',
-    reviewerNotes: 'Routine weekly check complete. Skin clear.',
+    finding: '',
+    aiObservation: '',
+    finalObservation: '',
+    status: 'ready_to_analyze',
+    updatedAt: '2026-09-21 11:50',
     auditTrail: [
       {
-        id: 'aud-872-4',
-        timestamp: '2026-09-21 15:30',
-        actor: 'Dr. Marcus Vance',
-        actorRole: 'Consulting Physician',
-        action: 'Observation confirmed',
-        details: 'Observation confirmed with note: "Routine weekly check complete. Skin clear."'
-      },
-      {
-        id: 'aud-872-3',
-        timestamp: '2026-09-21 15:10',
-        actor: 'System',
-        actorRole: 'Comparative Analysis',
-        action: 'Comparative analysis completed',
-        details: 'Candidate finding identified: No significant visible change identified (High confidence).'
-      },
-      {
         id: 'aud-872-2',
-        timestamp: '2026-09-21 15:00',
+        timestamp: '2026-09-21 11:50',
         actor: 'Case Worker D. Chen',
         actorRole: 'Reviewer',
-        action: 'Review check initiated',
-        details: 'New review image IF452-REV-01 registered for Back.'
+        action: 'Review photograph selected',
+        details: 'Review photograph IF452-REV-01 selected and registered for Back. Ready for comparative analysis.'
       },
       {
         id: 'aud-872-1',
@@ -666,248 +1132,279 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
         actor: 'System',
         actorRole: 'Baseline Intake',
         action: 'Baseline image registered',
-        details: 'Reference image IF452 established.'
+        details: 'Reference image IF452 established for Back.'
       }
     ]
   },
 
-  // 4. Confirmed Routine Check: IF472 (Lower Back, No change)
+  // 6. Not Analyzed (Baseline only, No Review Image Selected): IF461 (Foot)
   {
     id: 'BC-2026-0851',
-    patientRecordId: 'IF472',
-    patientName: 'Record IF-472',
-    referenceImage: DEMO_ASSETS.if472.reference,
-    referenceImageId: 'IF472',
-    referenceDate: '2026-09-09 09:15',
-    newImage: DEMO_ASSETS.if472.review,
-    newImageId: 'IF472-REV-02',
-    newImageDate: '2026-09-21 13:30',
-    bodyRegion: 'Lower Back',
-    changeType: 'No Significant Visible Change',
-    finding: 'No significant visible change identified',
-    confidence: 'High',
-    confidenceScore: 0.95,
-    candidateFinding: {
-      bodyRegion: 'Lower Back',
-      changeType: 'No Significant Visible Change',
-      finding: 'No significant visible change identified',
-      confidence: 'High',
-      confidenceScore: 0.95
-    },
-    aiObservation: 'Reviewing the new picture against reference image IF472, no significant visible change or new discoloration identified across the lower lumbar and dorsal region. Cutaneous presentation appears stable.',
-    finalObservation: 'Reviewing the new picture against reference image IF472, no significant visible change or new discoloration identified across the lower lumbar and dorsal region. Cutaneous presentation appears stable.',
-    status: 'confirmed',
-    reviewer: 'Nurse E. Davies',
-    reviewerRole: 'Registered Nurse',
-    confirmedAt: '2026-09-21 14:00',
-    reviewerNotes: 'Routine intake re-examination. All dorsal regions intact.',
+    patientRecordId: 'IF461',
+    patientName: 'Record IF-461',
+    referenceImage: BODY_CHECK_IMAGE_ASSETS.if461.reference,
+    referenceImageId: 'IF461',
+    referenceDate: '2026-09-13 10:30',
+    newImage: '',
+    newImageId: '',
+    newImageDate: '',
+    bodyRegion: 'Foot',
+    finding: '',
+    aiObservation: '',
+    finalObservation: '',
+    status: 'not_analyzed',
+    updatedAt: '2026-09-13 10:30',
     auditTrail: [
-      {
-        id: 'aud-851-4',
-        timestamp: '2026-09-21 14:00',
-        actor: 'Nurse E. Davies',
-        actorRole: 'Registered Nurse',
-        action: 'Observation confirmed',
-        details: 'Observation confirmed with note: "Routine intake re-examination. All dorsal regions intact."'
-      },
-      {
-        id: 'aud-851-3',
-        timestamp: '2026-09-21 13:40',
-        actor: 'System',
-        actorRole: 'Comparative Analysis',
-        action: 'Comparative analysis completed',
-        details: 'Candidate finding identified: No significant visible change identified (High confidence).'
-      },
-      {
-        id: 'aud-851-2',
-        timestamp: '2026-09-21 13:30',
-        actor: 'Case Worker J. Patel',
-        actorRole: 'Reviewer',
-        action: 'Review check initiated',
-        details: 'New review image IF472-REV-02 registered for Lower Back.'
-      },
       {
         id: 'aud-851-1',
-        timestamp: '2026-09-09 09:15',
-        actor: 'System',
-        actorRole: 'Baseline Intake',
-        action: 'Baseline image registered',
-        details: 'Reference image IF472 established.'
-      }
-    ]
-  },
-
-  // 5. AI Draft Ready: IF468 (Left Upper Arm)
-  {
-    id: 'BC-2026-0898',
-    patientRecordId: 'IF468',
-    patientName: 'Record IF-468',
-    referenceImage: DEMO_ASSETS.if468.reference,
-    referenceImageId: 'IF468',
-    referenceDate: '2026-09-13 10:30',
-    newImage: DEMO_ASSETS.if468.review,
-    newImageId: 'IF468-REV-01',
-    newImageDate: '2026-09-21 15:45',
-    bodyRegion: 'Left Upper Arm',
-    changeType: 'Visible Bruising-like Appearance',
-    finding: 'Faint localized mottled discoloration',
-    confidence: 'Moderate',
-    confidenceScore: 0.74,
-    candidateFinding: {
-      bodyRegion: 'Left Upper Arm',
-      changeType: 'Visible Bruising-like Appearance',
-      finding: 'Faint localized mottled discoloration',
-      confidence: 'Moderate',
-      confidenceScore: 0.74,
-      changeCoordinates: {
-        xPercent: 49.0,
-        yPercent: 50.0,
-        radiusPercent: 11
-      }
-    },
-    aiObservation: 'Reviewing the new picture against reference image IF468, faint localized mottled discoloration is noted on the lateral left upper arm that was not visible on baseline capture. Skin surface remains intact without edema.',
-    finalObservation: 'Reviewing the new picture against reference image IF468, faint localized mottled discoloration is noted on the lateral left upper arm that was not visible on baseline capture. Skin surface remains intact without edema.',
-    status: 'ai_draft_ready',
-    changeCoordinates: {
-      xPercent: 49.0,
-      yPercent: 50.0,
-      radiusPercent: 11
-    },
-    auditTrail: [
-      {
-        id: 'aud-898-3',
-        timestamp: '2026-09-21 15:50',
-        actor: 'System',
-        actorRole: 'Comparative Analysis',
-        action: 'Comparative analysis completed',
-        details: 'Candidate finding identified: Faint localized mottled discoloration (Moderate confidence).'
-      },
-      {
-        id: 'aud-898-2',
-        timestamp: '2026-09-21 15:45',
-        actor: 'Senior Practitioner O. Bailey',
-        actorRole: 'Reviewer',
-        action: 'Review check initiated',
-        details: 'New review image IF468-REV-01 registered for Left Upper Arm.'
-      },
-      {
-        id: 'aud-898-1',
         timestamp: '2026-09-13 10:30',
         actor: 'System',
         actorRole: 'Baseline Intake',
         action: 'Baseline image registered',
-        details: 'Reference image IF468 established.'
+        details: 'Reference image IF461 established for Foot.'
       }
     ]
-  },
+  }
+];
 
-  // 6. AI Draft Ready: IF439 (Right Lower Leg)
+export interface GalleryImageAsset {
+  id: string;
+  recordId: string;
+  bodyRegion: BodyRegion;
+  refSourceId: string;
+  imageUrl: string;
+  fileName: string;
+  captureDate: string;
+  description: string;
+  imageType: ImageType;
+  isNew: boolean;
+  scenarioIndex?: number;
+  totalScenarios?: number;
+}
+
+export const GALLERY_REVIEW_ASSETS: GalleryImageAsset[] = [
   {
-    id: 'BC-2026-0864',
-    patientRecordId: 'IF439',
-    patientName: 'Record IF-439',
-    referenceImage: DEMO_ASSETS.if439.reference,
-    referenceImageId: 'IF439',
-    referenceDate: '2026-09-12 13:10',
-    newImage: DEMO_ASSETS.if439.review,
-    newImageId: 'IF439-REV-03',
-    newImageDate: '2026-09-20 16:30',
+    id: 'IF456-REV-01',
+    recordId: 'IF456',
+    bodyRegion: 'Left Shoulder',
+    refSourceId: 'REF-001',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if456.review01,
+    fileName: 'review-01.webp',
+    captureDate: '2026-09-21 14:15',
+    description: 'Localized reddish/purple bruise/contusion over the shoulder/deltoid ridge',
+    imageType: 'abnormal finding',
+    isNew: true,
+    scenarioIndex: 1,
+    totalScenarios: 3
+  },
+  {
+    id: 'IF456-REV-02',
+    recordId: 'IF456',
+    bodyRegion: 'Left Shoulder',
+    refSourceId: 'REF-001',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if456.review02,
+    fileName: 'review-02.webp',
+    captureDate: '2026-09-21 14:20',
+    description: 'Mild localized erythema/redness',
+    imageType: 'abnormal finding',
+    isNew: true,
+    scenarioIndex: 2,
+    totalScenarios: 3
+  },
+  {
+    id: 'IF456-REV-03',
+    recordId: 'IF456',
+    bodyRegion: 'Left Shoulder',
+    refSourceId: 'REF-001',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if456.review03,
+    fileName: 'review-03.webp',
+    captureDate: '2026-09-21 14:30',
+    description: 'Normal/no significant visible change',
+    imageType: 'normal / unchanged',
+    isNew: false,
+    scenarioIndex: 3,
+    totalScenarios: 3
+  },
+  {
+    id: 'IF455-REV-01',
+    recordId: 'IF455',
+    bodyRegion: 'Right Forearm',
+    refSourceId: 'REF-005',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if455.review01,
+    fileName: 'review-01.webp',
+    captureDate: '2026-09-21 10:45',
+    description: 'Reddish-purple localized bruising over the mid-shaft volar forearm',
+    imageType: 'abnormal finding',
+    isNew: true,
+    scenarioIndex: 1,
+    totalScenarios: 2
+  },
+  {
+    id: 'IF455-REV-02',
+    recordId: 'IF455',
+    bodyRegion: 'Right Forearm',
+    refSourceId: 'REF-005',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if455.review02,
+    fileName: 'review-02.webp',
+    captureDate: '2026-09-21 10:50',
+    description: 'Resolving bruise with subtler yellowish/brown peripheral discoloration',
+    imageType: 'abnormal finding',
+    isNew: true,
+    scenarioIndex: 2,
+    totalScenarios: 2
+  },
+  {
+    id: 'IF452-REV-01',
+    recordId: 'IF452',
+    bodyRegion: 'Back',
+    refSourceId: 'REF-001',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if452.review01,
+    fileName: 'review-01.webp',
+    captureDate: '2026-09-21 15:00',
+    description: 'Normal/no significant visible change',
+    imageType: 'normal / unchanged',
+    isNew: false,
+    scenarioIndex: 1,
+    totalScenarios: 1
+  },
+  {
+    id: 'IF439-REV-01',
+    recordId: 'IF439',
     bodyRegion: 'Right Lower Leg',
-    changeType: 'Visible Bruising-like Appearance',
-    finding: 'Faint mottled discoloration / possible minor contusion',
-    confidence: 'Moderate',
-    confidenceScore: 0.72,
-    candidateFinding: {
-      bodyRegion: 'Right Lower Leg',
-      changeType: 'Visible Bruising-like Appearance',
-      finding: 'Faint mottled discoloration / possible minor contusion',
-      confidence: 'Moderate',
-      confidenceScore: 0.72,
-      changeCoordinates: {
-        xPercent: 56.0,
-        yPercent: 53.0,
-        radiusPercent: 11
-      }
-    },
-    aiObservation: 'Reviewing the new picture against reference image IF439, faint mottled discoloration observed near the superior-lateral border of the right knee.',
-    finalObservation: 'Reviewing the new picture against reference image IF439, faint mottled discoloration observed near the superior-lateral border of the right knee.',
-    status: 'ai_draft_ready',
-    changeCoordinates: {
-      xPercent: 56.0,
-      yPercent: 53.0,
-      radiusPercent: 11
-    },
-    auditTrail: [
-      {
-        id: 'aud-864-3',
-        timestamp: '2026-09-20 16:40',
-        actor: 'System',
-        actorRole: 'Comparative Analysis',
-        action: 'Comparative analysis completed',
-        details: 'Candidate finding identified: Faint mottled discoloration / possible minor contusion (Moderate confidence).'
-      },
-      {
-        id: 'aud-864-2',
-        timestamp: '2026-09-20 16:30',
-        actor: 'Care Worker T. Harris',
-        actorRole: 'Reviewer',
-        action: 'Review check initiated',
-        details: 'New review image IF439-REV-03 registered for Right Lower Leg.'
-      },
-      {
-        id: 'aud-864-1',
-        timestamp: '2026-09-12 13:10',
-        actor: 'System',
-        actorRole: 'Baseline Intake',
-        action: 'Baseline image registered',
-        details: 'Reference image IF439 established.'
-      }
-    ]
+    refSourceId: 'REF-008',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if439.review01,
+    fileName: 'review-01.webp',
+    captureDate: '2026-09-20 16:30',
+    description: 'Localized reddish/purple discoloration below the patella/proximal tibial region',
+    imageType: 'abnormal finding',
+    isNew: true,
+    scenarioIndex: 1,
+    totalScenarios: 2
   },
-
-  // 7. Ready for Review: IF477 (Right Knee)
   {
-    id: 'BC-2026-0847',
-    patientRecordId: 'IF477',
-    patientName: 'Record IF-477',
-    referenceImage: DEMO_ASSETS.if477.reference,
-    referenceImageId: 'IF477',
-    referenceDate: '2026-09-15 11:45',
-    newImage: DEMO_ASSETS.if477.review,
-    newImageId: 'IF477-REV-01',
-    newImageDate: '2026-09-21 16:15',
-    bodyRegion: 'Right Knee',
-    changeType: 'No Significant Visible Change',
-    finding: 'No significant visible change identified',
-    confidence: 'High',
-    confidenceScore: 0.92,
-    candidateFinding: {
-      bodyRegion: 'Right Knee',
-      changeType: 'No Significant Visible Change',
-      finding: 'No significant visible change identified',
-      confidence: 'High',
-      confidenceScore: 0.92
-    },
-    aiObservation: 'Reviewing the new picture against reference image IF477, no significant visible change identified across the right anterior patellar region. Joint contour and cutaneous surface remain consistent with baseline.',
-    finalObservation: 'Reviewing the new picture against reference image IF477, no significant visible change identified across the right anterior patellar region. Joint contour and cutaneous surface remain consistent with baseline.',
-    status: 'ready_for_review',
-    auditTrail: [
-      {
-        id: 'aud-847-2',
-        timestamp: '2026-09-21 16:15',
-        actor: 'Case Officer Miller',
-        actorRole: 'Reviewer',
-        action: 'Review check initiated',
-        details: 'New review image IF477-REV-01 registered for Right Knee.'
-      },
-      {
-        id: 'aud-847-1',
-        timestamp: '2026-09-15 11:45',
-        actor: 'System',
-        actorRole: 'Baseline Intake',
-        action: 'Baseline image registered',
-        details: 'Reference image IF477 established.'
-      }
-    ]
+    id: 'IF439-REV-02',
+    recordId: 'IF439',
+    bodyRegion: 'Right Lower Leg',
+    refSourceId: 'REF-008',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if439.review02,
+    fileName: 'review-02.webp',
+    captureDate: '2026-09-20 16:40',
+    description: 'Resolving discoloration with a softer yellowish-tan appearance',
+    imageType: 'abnormal finding',
+    isNew: true,
+    scenarioIndex: 2,
+    totalScenarios: 2
+  },
+  {
+    id: 'IF460-REV-01',
+    recordId: 'IF460',
+    bodyRegion: 'Foot',
+    refSourceId: 'REF-011',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if460.review01,
+    fileName: 'review-01.webp',
+    captureDate: '2026-09-21 11:20',
+    description: 'Mild localized erythema/redness on the lateral dorsum',
+    imageType: 'abnormal finding',
+    isNew: true,
+    scenarioIndex: 1,
+    totalScenarios: 3
+  },
+  {
+    id: 'IF460-REV-02',
+    recordId: 'IF460',
+    bodyRegion: 'Foot',
+    refSourceId: 'REF-011',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if460.review02,
+    fileName: 'review-02.webp',
+    captureDate: '2026-09-21 11:25',
+    description: 'Mild localized swelling/skin-color change without an open wound',
+    imageType: 'abnormal finding',
+    isNew: true,
+    scenarioIndex: 2,
+    totalScenarios: 3
+  },
+  {
+    id: 'IF460-REV-03',
+    recordId: 'IF460',
+    bodyRegion: 'Foot',
+    refSourceId: 'REF-011',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if460.review03,
+    fileName: 'review-03.webp',
+    captureDate: '2026-09-21 11:35',
+    description: 'Normal/no significant visible change',
+    imageType: 'normal / unchanged',
+    isNew: false,
+    scenarioIndex: 3,
+    totalScenarios: 3
+  },
+  {
+    id: 'IF461-REV-01',
+    recordId: 'IF461',
+    bodyRegion: 'Foot',
+    refSourceId: 'REF-012',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if461.review01,
+    fileName: 'review-01.webp',
+    captureDate: '2026-09-21 15:45',
+    description: 'Normal/no significant visible change',
+    imageType: 'normal / unchanged',
+    isNew: false,
+    scenarioIndex: 1,
+    totalScenarios: 1
+  },
+  {
+    id: 'IF462-REV-01',
+    recordId: 'IF462',
+    bodyRegion: 'Upper Arm',
+    refSourceId: 'REF-001',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if462.review01,
+    fileName: 'review-01.webp',
+    captureDate: '2026-09-21 13:30',
+    description: 'Subtle localized skin-color variation on the lateral upper arm',
+    imageType: 'abnormal finding',
+    isNew: true,
+    scenarioIndex: 1,
+    totalScenarios: 2
+  },
+  {
+    id: 'IF462-REV-02',
+    recordId: 'IF462',
+    bodyRegion: 'Upper Arm',
+    refSourceId: 'REF-001',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if462.review02,
+    fileName: 'review-02.webp',
+    captureDate: '2026-09-21 13:35',
+    description: 'Mild localized reddish/purple discoloration',
+    imageType: 'abnormal finding',
+    isNew: true,
+    scenarioIndex: 2,
+    totalScenarios: 2
+  },
+  {
+    id: 'IF463-REV-01',
+    recordId: 'IF463',
+    bodyRegion: 'Lower Leg',
+    refSourceId: 'REF-010',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if463.review01,
+    fileName: 'review-01.webp',
+    captureDate: '2026-09-21 16:15',
+    description: 'Resolving yellowish-tan discoloration on the anterior tibial shin',
+    imageType: 'abnormal finding',
+    isNew: true,
+    scenarioIndex: 1,
+    totalScenarios: 2
+  },
+  {
+    id: 'IF463-REV-02',
+    recordId: 'IF463',
+    bodyRegion: 'Lower Leg',
+    refSourceId: 'REF-010',
+    imageUrl: BODY_CHECK_IMAGE_ASSETS.if463.review02,
+    fileName: 'review-02.webp',
+    captureDate: '2026-09-21 16:25',
+    description: 'More subtle/resolved discoloration with minimal visible residual change',
+    imageType: 'abnormal finding',
+    isNew: true,
+    scenarioIndex: 2,
+    totalScenarios: 2
   }
 ];
