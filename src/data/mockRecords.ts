@@ -7,50 +7,50 @@ import { BodyCheckRecord, PatientRecord, DemoScenario, BodyRegion, ImageType } f
 export const BODY_CHECK_IMAGE_ASSETS = {
   if456: {
     reference: '/images/body-check/IF456/reference.webp',
-    review: '/images/body-check/IF456/review-01.webp',
-    review01: '/images/body-check/IF456/review-01.webp',
+    review: '/images/body-check/IF456/review.webp',
+    review01: '/images/body-check/IF456/review.webp',
     review02: '/images/body-check/IF456/review-02.webp',
     review03: '/images/body-check/IF456/review-03.webp',
   },
   if455: {
     reference: '/images/body-check/IF455/reference.webp',
-    review: '/images/body-check/IF455/review-01.webp',
-    review01: '/images/body-check/IF455/review-01.webp',
+    review: '/images/body-check/IF455/review.webp',
+    review01: '/images/body-check/IF455/review.webp',
     review02: '/images/body-check/IF455/review-02.webp',
   },
   if452: {
     reference: '/images/body-check/IF452/reference.webp',
-    review: '/images/body-check/IF452/review-01.webp',
-    review01: '/images/body-check/IF452/review-01.webp',
+    review: '/images/body-check/IF452/review.webp',
+    review01: '/images/body-check/IF452/review.webp',
   },
   if439: {
     reference: '/images/body-check/IF439/reference.webp',
-    review: '/images/body-check/IF439/review-01.webp',
-    review01: '/images/body-check/IF439/review-01.webp',
+    review: '/images/body-check/IF439/review.webp',
+    review01: '/images/body-check/IF439/review.webp',
     review02: '/images/body-check/IF439/review-02.webp',
   },
   if460: {
     reference: '/images/body-check/IF460/reference.webp',
-    review: '/images/body-check/IF460/review-01.webp',
-    review01: '/images/body-check/IF460/review-01.webp',
+    review: '/images/body-check/IF460/review.webp',
+    review01: '/images/body-check/IF460/review.webp',
     review02: '/images/body-check/IF460/review-02.webp',
     review03: '/images/body-check/IF460/review-03.webp',
   },
   if461: {
     reference: '/images/body-check/IF461/reference.webp',
-    review: '/images/body-check/IF461/review-01.webp',
-    review01: '/images/body-check/IF461/review-01.webp',
+    review: '/images/body-check/IF461/review.webp',
+    review01: '/images/body-check/IF461/review.webp',
   },
   if462: {
     reference: '/images/body-check/IF462/reference.webp',
-    review: '/images/body-check/IF462/review-01.webp',
-    review01: '/images/body-check/IF462/review-01.webp',
+    review: '/images/body-check/IF462/review.webp',
+    review01: '/images/body-check/IF462/review.webp',
     review02: '/images/body-check/IF462/review-02.webp',
   },
   if463: {
     reference: '/images/body-check/IF463/reference.webp',
-    review: '/images/body-check/IF463/review-01.webp',
-    review01: '/images/body-check/IF463/review-01.webp',
+    review: '/images/body-check/IF463/review.webp',
+    review01: '/images/body-check/IF463/review.webp',
     review02: '/images/body-check/IF463/review-02.webp',
   }
 };
@@ -90,18 +90,30 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
         finding: 'Localized reddish/purple bruise/contusion over the shoulder/deltoid ridge',
         confidence: 'Moderate',
         confidenceScore: 0.78,
+        deltaRegion: {
+          x: 0.456,
+          y: 0.428,
+          width: 0.150,
+          height: 0.190
+        },
         changeCoordinates: {
-          xPercent: 36.5,
-          yPercent: 52.8,
-          radiusPercent: 12
+          xPercent: 45.6,
+          yPercent: 42.8,
+          radiusPercent: 10
         }
       },
       aiObservation: 'Comparison of the review image with the reference image shows a localized reddish-purple bruise/contusion over the left shoulder/deltoid ridge.',
-        changeCoordinates: {
-          xPercent: 36.5,
-          yPercent: 52.8,
-          radiusPercent: 12
-        }
+      deltaRegion: {
+        x: 0.456,
+        y: 0.428,
+        width: 0.150,
+        height: 0.190
+      },
+      changeCoordinates: {
+        xPercent: 45.6,
+        yPercent: 42.8,
+        radiusPercent: 10
+      }
     }
   },
 
@@ -135,18 +147,30 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
         finding: 'Mild localized erythema/redness',
         confidence: 'Moderate',
         confidenceScore: 0.81,
+        deltaRegion: {
+          x: 0.456,
+          y: 0.428,
+          width: 0.150,
+          height: 0.190
+        },
         changeCoordinates: {
-          xPercent: 38.0,
-          yPercent: 50.5,
+          xPercent: 45.6,
+          yPercent: 42.8,
           radiusPercent: 10
         }
       },
       aiObservation: 'Comparison of the review image with the reference image shows mild localized erythema/redness over the left deltoid region.',
-        changeCoordinates: {
-          xPercent: 38.0,
-          yPercent: 50.5,
-          radiusPercent: 10
-        }
+      deltaRegion: {
+        x: 0.456,
+        y: 0.428,
+        width: 0.150,
+        height: 0.190
+      },
+      changeCoordinates: {
+        xPercent: 45.6,
+        yPercent: 42.8,
+        radiusPercent: 10
+      }
     }
   },
 
@@ -215,18 +239,30 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
         finding: 'Reddish-purple localized bruising over the mid-shaft volar forearm',
         confidence: 'High',
         confidenceScore: 0.89,
+        deltaRegion: {
+          x: 0.424,
+          y: 0.479,
+          width: 0.180,
+          height: 0.170
+        },
         changeCoordinates: {
-          xPercent: 46.8,
-          yPercent: 49.4,
-          radiusPercent: 10
+          xPercent: 42.4,
+          yPercent: 47.9,
+          radiusPercent: 9
         }
       },
       aiObservation: 'Comparison of the review image with the reference image shows reddish-purple localized bruising over the mid-shaft volar forearm.',
-        changeCoordinates: {
-          xPercent: 46.8,
-          yPercent: 49.4,
-          radiusPercent: 10
-        }
+      deltaRegion: {
+        x: 0.424,
+        y: 0.479,
+        width: 0.180,
+        height: 0.170
+      },
+      changeCoordinates: {
+        xPercent: 42.4,
+        yPercent: 47.9,
+        radiusPercent: 9
+      }
     }
   },
 
@@ -260,18 +296,30 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
         finding: 'Resolving bruise with subtler yellowish/brown peripheral discoloration',
         confidence: 'Moderate',
         confidenceScore: 0.84,
+        deltaRegion: {
+          x: 0.424,
+          y: 0.479,
+          width: 0.180,
+          height: 0.170
+        },
         changeCoordinates: {
-          xPercent: 47.2,
-          yPercent: 51.0,
-          radiusPercent: 11
+          xPercent: 42.4,
+          yPercent: 47.9,
+          radiusPercent: 9
         }
       },
       aiObservation: 'Comparison of the review image with the reference image shows a resolving bruise with subtler yellowish/brown peripheral discoloration on the right forearm.',
-        changeCoordinates: {
-          xPercent: 47.2,
-          yPercent: 51.0,
-          radiusPercent: 11
-        }
+      deltaRegion: {
+        x: 0.424,
+        y: 0.479,
+        width: 0.180,
+        height: 0.170
+      },
+      changeCoordinates: {
+        xPercent: 42.4,
+        yPercent: 47.9,
+        radiusPercent: 9
+      }
     }
   },
 
@@ -340,18 +388,30 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
         finding: 'Localized reddish/purple discoloration below the patella/proximal tibial region',
         confidence: 'Moderate',
         confidenceScore: 0.77,
+        deltaRegion: {
+          x: 0.471,
+          y: 0.246,
+          width: 0.088,
+          height: 0.138
+        },
         changeCoordinates: {
-          xPercent: 53.1,
-          yPercent: 54.3,
-          radiusPercent: 14
+          xPercent: 47.1,
+          yPercent: 24.6,
+          radiusPercent: 7
         }
       },
       aiObservation: 'Comparison of the review image with the reference image shows localized reddish/purple discoloration below the patella/proximal tibial region.',
-        changeCoordinates: {
-          xPercent: 53.1,
-          yPercent: 54.3,
-          radiusPercent: 14
-        }
+      deltaRegion: {
+        x: 0.471,
+        y: 0.246,
+        width: 0.088,
+        height: 0.138
+      },
+      changeCoordinates: {
+        xPercent: 47.1,
+        yPercent: 24.6,
+        radiusPercent: 7
+      }
     }
   },
 
@@ -385,18 +445,30 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
         finding: 'Resolving discoloration with a softer yellowish-tan appearance',
         confidence: 'Moderate',
         confidenceScore: 0.74,
+        deltaRegion: {
+          x: 0.471,
+          y: 0.246,
+          width: 0.088,
+          height: 0.138
+        },
         changeCoordinates: {
-          xPercent: 52.5,
-          yPercent: 55.0,
-          radiusPercent: 13
+          xPercent: 47.1,
+          yPercent: 24.6,
+          radiusPercent: 7
         }
       },
       aiObservation: 'Comparison of the review image with the reference image shows resolving discoloration with a softer yellowish-tan appearance on the right lower leg.',
-        changeCoordinates: {
-          xPercent: 52.5,
-          yPercent: 55.0,
-          radiusPercent: 13
-        }
+      deltaRegion: {
+        x: 0.471,
+        y: 0.246,
+        width: 0.088,
+        height: 0.138
+      },
+      changeCoordinates: {
+        xPercent: 47.1,
+        yPercent: 24.6,
+        radiusPercent: 7
+      }
     }
   },
 
@@ -430,18 +502,30 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
         finding: 'Mild localized erythema/redness on the lateral dorsum',
         confidence: 'Moderate',
         confidenceScore: 0.82,
+        deltaRegion: {
+          x: 0.510,
+          y: 0.431,
+          width: 0.248,
+          height: 0.276
+        },
         changeCoordinates: {
-          xPercent: 47.5,
-          yPercent: 46.5,
-          radiusPercent: 12
+          xPercent: 51.0,
+          yPercent: 43.1,
+          radiusPercent: 14
         }
       },
       aiObservation: 'Comparison of the review image with the reference image shows mild localized erythema/redness on the lateral dorsum of the foot.',
-        changeCoordinates: {
-          xPercent: 47.5,
-          yPercent: 46.5,
-          radiusPercent: 12
-        }
+      deltaRegion: {
+        x: 0.510,
+        y: 0.431,
+        width: 0.248,
+        height: 0.276
+      },
+      changeCoordinates: {
+        xPercent: 51.0,
+        yPercent: 43.1,
+        radiusPercent: 14
+      }
     }
   },
 
@@ -475,18 +559,30 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
         finding: 'Mild localized swelling/skin-color change without an open wound',
         confidence: 'Moderate',
         confidenceScore: 0.8,
+        deltaRegion: {
+          x: 0.510,
+          y: 0.431,
+          width: 0.248,
+          height: 0.276
+        },
         changeCoordinates: {
-          xPercent: 48.0,
-          yPercent: 48.2,
+          xPercent: 51.0,
+          yPercent: 43.1,
           radiusPercent: 14
         }
       },
       aiObservation: 'Comparison of the review image with the reference image shows mild localized swelling and skin-color change without an open wound on the dorsal foot.',
-        changeCoordinates: {
-          xPercent: 48.0,
-          yPercent: 48.2,
-          radiusPercent: 14
-        }
+      deltaRegion: {
+        x: 0.510,
+        y: 0.431,
+        width: 0.248,
+        height: 0.276
+      },
+      changeCoordinates: {
+        xPercent: 51.0,
+        yPercent: 43.1,
+        radiusPercent: 14
+      }
     }
   },
 
@@ -590,18 +686,30 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
         finding: 'Subtle localized skin-color variation on the lateral upper arm',
         confidence: 'Moderate',
         confidenceScore: 0.79,
+        deltaRegion: {
+          x: 0.500,
+          y: 0.531,
+          width: 0.181,
+          height: 0.222
+        },
         changeCoordinates: {
-          xPercent: 49.1,
-          yPercent: 58.6,
-          radiusPercent: 10
+          xPercent: 50.0,
+          yPercent: 53.1,
+          radiusPercent: 11
         }
       },
       aiObservation: 'Comparison of the review image with the reference image shows subtle localized skin-color variation on the upper arm / lateral brachium.',
-        changeCoordinates: {
-          xPercent: 49.1,
-          yPercent: 58.6,
-          radiusPercent: 10
-        }
+      deltaRegion: {
+        x: 0.500,
+        y: 0.531,
+        width: 0.181,
+        height: 0.222
+      },
+      changeCoordinates: {
+        xPercent: 50.0,
+        yPercent: 53.1,
+        radiusPercent: 11
+      }
     }
   },
 
@@ -635,18 +743,30 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
         finding: 'Mild localized reddish/purple discoloration',
         confidence: 'Moderate',
         confidenceScore: 0.83,
+        deltaRegion: {
+          x: 0.500,
+          y: 0.531,
+          width: 0.181,
+          height: 0.222
+        },
         changeCoordinates: {
-          xPercent: 50.2,
-          yPercent: 56.4,
+          xPercent: 50.0,
+          yPercent: 53.1,
           radiusPercent: 11
         }
       },
       aiObservation: 'Comparison of the review image with the reference image shows mild localized reddish/purple discoloration on the upper arm.',
-        changeCoordinates: {
-          xPercent: 50.2,
-          yPercent: 56.4,
-          radiusPercent: 11
-        }
+      deltaRegion: {
+        x: 0.500,
+        y: 0.531,
+        width: 0.181,
+        height: 0.222
+      },
+      changeCoordinates: {
+        xPercent: 50.0,
+        yPercent: 53.1,
+        radiusPercent: 11
+      }
     }
   },
 
@@ -680,18 +800,30 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
         finding: 'Resolving yellowish-tan discoloration on the anterior tibial shin',
         confidence: 'Moderate',
         confidenceScore: 0.75,
+        deltaRegion: {
+          x: 0.488,
+          y: 0.445,
+          width: 0.123,
+          height: 0.190
+        },
         changeCoordinates: {
-          xPercent: 52.1,
-          yPercent: 53.0,
-          radiusPercent: 12
+          xPercent: 48.8,
+          yPercent: 44.5,
+          radiusPercent: 10
         }
       },
       aiObservation: 'Comparison of the review image with the reference image shows subtle resolving yellowish-tan discoloration on the anterior tibial shin.',
-        changeCoordinates: {
-          xPercent: 52.1,
-          yPercent: 53.0,
-          radiusPercent: 12
-        }
+      deltaRegion: {
+        x: 0.488,
+        y: 0.445,
+        width: 0.123,
+        height: 0.190
+      },
+      changeCoordinates: {
+        xPercent: 48.8,
+        yPercent: 44.5,
+        radiusPercent: 10
+      }
     }
   },
 
@@ -725,18 +857,30 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
         finding: 'More subtle/resolved discoloration with minimal visible residual change',
         confidence: 'Moderate',
         confidenceScore: 0.72,
+        deltaRegion: {
+          x: 0.488,
+          y: 0.445,
+          width: 0.123,
+          height: 0.190
+        },
         changeCoordinates: {
-          xPercent: 51.5,
-          yPercent: 54.0,
+          xPercent: 48.8,
+          yPercent: 44.5,
           radiusPercent: 10
         }
       },
       aiObservation: 'Comparison of the review image with the reference image shows more subtle/resolved discoloration with minimal visible residual change on the lower leg.',
-        changeCoordinates: {
-          xPercent: 51.5,
-          yPercent: 54.0,
-          radiusPercent: 10
-        }
+      deltaRegion: {
+        x: 0.488,
+        y: 0.445,
+        width: 0.123,
+        height: 0.190
+      },
+      changeCoordinates: {
+        xPercent: 48.8,
+        yPercent: 44.5,
+        radiusPercent: 10
+      }
     }
   }
 ];
@@ -886,10 +1030,16 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
       finding: 'Reddish-purple localized bruising over the mid-shaft volar forearm',
       confidence: 'High',
       confidenceScore: 0.89,
+      deltaRegion: {
+        x: 0.424,
+        y: 0.479,
+        width: 0.180,
+        height: 0.170
+      },
       changeCoordinates: {
-        xPercent: 46.8,
-        yPercent: 49.4,
-        radiusPercent: 10
+        xPercent: 42.4,
+        yPercent: 47.9,
+        radiusPercent: 9
       }
     },
     aiObservation: 'Comparison of the review image with the reference image shows reddish-purple localized bruising over the mid-shaft volar forearm.',
@@ -900,10 +1050,16 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
     confirmedAt: '2026-09-21 16:55',
     updatedAt: '2026-09-21 16:55',
     reviewerNotes: 'Surface cleansed. Routine reassessment scheduled for morning rounds.',
+    deltaRegion: {
+      x: 0.424,
+      y: 0.479,
+      width: 0.180,
+      height: 0.170
+    },
     changeCoordinates: {
-      xPercent: 46.8,
-      yPercent: 49.4,
-      radiusPercent: 10
+      xPercent: 42.4,
+      yPercent: 47.9,
+      radiusPercent: 9
     },
     auditTrail: [
       {
@@ -963,20 +1119,32 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
       finding: 'Mild localized erythema/redness on the lateral dorsum',
       confidence: 'Moderate',
       confidenceScore: 0.82,
+      deltaRegion: {
+        x: 0.510,
+        y: 0.431,
+        width: 0.248,
+        height: 0.276
+      },
       changeCoordinates: {
-        xPercent: 47.5,
-        yPercent: 46.5,
-        radiusPercent: 12
+        xPercent: 51.0,
+        yPercent: 43.1,
+        radiusPercent: 14
       }
     },
     aiObservation: 'Comparison of the review image with the reference image shows a localized area of superficial redness on the lateral dorsal foot.',
     finalObservation: '',
     status: 'ready_for_review',
     updatedAt: '2026-09-21 15:35',
+    deltaRegion: {
+      x: 0.510,
+      y: 0.431,
+      width: 0.248,
+      height: 0.276
+    },
     changeCoordinates: {
-      xPercent: 47.5,
-      yPercent: 46.5,
-      radiusPercent: 12
+      xPercent: 51.0,
+      yPercent: 43.1,
+      radiusPercent: 14
     },
     auditTrail: [
       {
@@ -1028,20 +1196,32 @@ export const INITIAL_BODY_CHECKS: BodyCheckRecord[] = [
       finding: 'Subtle localized skin-color variation on the lateral upper arm',
       confidence: 'Moderate',
       confidenceScore: 0.79,
+      deltaRegion: {
+        x: 0.500,
+        y: 0.531,
+        width: 0.181,
+        height: 0.222
+      },
       changeCoordinates: {
-        xPercent: 49.1,
-        yPercent: 58.6,
-        radiusPercent: 10
+        xPercent: 50.0,
+        yPercent: 53.1,
+        radiusPercent: 11
       }
     },
     aiObservation: 'Comparison of the review image with the reference image shows subtle localized skin-color variation on the lateral upper arm.',
     finalObservation: '',
     status: 'ready_for_review',
     updatedAt: '2026-09-21 14:20',
+    deltaRegion: {
+      x: 0.500,
+      y: 0.531,
+      width: 0.181,
+      height: 0.222
+    },
     changeCoordinates: {
-      xPercent: 49.1,
-      yPercent: 58.6,
-      radiusPercent: 10
+      xPercent: 50.0,
+      yPercent: 53.1,
+      radiusPercent: 11
     },
     auditTrail: [
       {
@@ -1189,7 +1369,7 @@ export const GALLERY_REVIEW_ASSETS: GalleryImageAsset[] = [
     bodyRegion: 'Left Shoulder',
     refSourceId: 'REF-001',
     imageUrl: BODY_CHECK_IMAGE_ASSETS.if456.review01,
-    fileName: 'review-01.webp',
+    fileName: 'review.webp',
     captureDate: '2026-09-21 14:15',
     description: 'Localized reddish/purple bruise/contusion over the shoulder/deltoid ridge',
     imageType: 'abnormal finding',
@@ -1231,7 +1411,7 @@ export const GALLERY_REVIEW_ASSETS: GalleryImageAsset[] = [
     bodyRegion: 'Right Forearm',
     refSourceId: 'REF-005',
     imageUrl: BODY_CHECK_IMAGE_ASSETS.if455.review01,
-    fileName: 'review-01.webp',
+    fileName: 'review.webp',
     captureDate: '2026-09-21 10:45',
     description: 'Reddish-purple localized bruising over the mid-shaft volar forearm',
     imageType: 'abnormal finding',
@@ -1259,7 +1439,7 @@ export const GALLERY_REVIEW_ASSETS: GalleryImageAsset[] = [
     bodyRegion: 'Back',
     refSourceId: 'REF-001',
     imageUrl: BODY_CHECK_IMAGE_ASSETS.if452.review01,
-    fileName: 'review-01.webp',
+    fileName: 'review.webp',
     captureDate: '2026-09-21 15:00',
     description: 'Normal/no significant visible change',
     imageType: 'normal / unchanged',
@@ -1273,7 +1453,7 @@ export const GALLERY_REVIEW_ASSETS: GalleryImageAsset[] = [
     bodyRegion: 'Right Lower Leg',
     refSourceId: 'REF-008',
     imageUrl: BODY_CHECK_IMAGE_ASSETS.if439.review01,
-    fileName: 'review-01.webp',
+    fileName: 'review.webp',
     captureDate: '2026-09-20 16:30',
     description: 'Localized reddish/purple discoloration below the patella/proximal tibial region',
     imageType: 'abnormal finding',
@@ -1301,7 +1481,7 @@ export const GALLERY_REVIEW_ASSETS: GalleryImageAsset[] = [
     bodyRegion: 'Foot',
     refSourceId: 'REF-011',
     imageUrl: BODY_CHECK_IMAGE_ASSETS.if460.review01,
-    fileName: 'review-01.webp',
+    fileName: 'review.webp',
     captureDate: '2026-09-21 11:20',
     description: 'Mild localized erythema/redness on the lateral dorsum',
     imageType: 'abnormal finding',
@@ -1343,7 +1523,7 @@ export const GALLERY_REVIEW_ASSETS: GalleryImageAsset[] = [
     bodyRegion: 'Foot',
     refSourceId: 'REF-012',
     imageUrl: BODY_CHECK_IMAGE_ASSETS.if461.review01,
-    fileName: 'review-01.webp',
+    fileName: 'review.webp',
     captureDate: '2026-09-21 15:45',
     description: 'Normal/no significant visible change',
     imageType: 'normal / unchanged',
@@ -1357,7 +1537,7 @@ export const GALLERY_REVIEW_ASSETS: GalleryImageAsset[] = [
     bodyRegion: 'Upper Arm',
     refSourceId: 'REF-001',
     imageUrl: BODY_CHECK_IMAGE_ASSETS.if462.review01,
-    fileName: 'review-01.webp',
+    fileName: 'review.webp',
     captureDate: '2026-09-21 13:30',
     description: 'Subtle localized skin-color variation on the lateral upper arm',
     imageType: 'abnormal finding',
@@ -1385,7 +1565,7 @@ export const GALLERY_REVIEW_ASSETS: GalleryImageAsset[] = [
     bodyRegion: 'Lower Leg',
     refSourceId: 'REF-010',
     imageUrl: BODY_CHECK_IMAGE_ASSETS.if463.review01,
-    fileName: 'review-01.webp',
+    fileName: 'review.webp',
     captureDate: '2026-09-21 16:15',
     description: 'Resolving yellowish-tan discoloration on the anterior tibial shin',
     imageType: 'abnormal finding',

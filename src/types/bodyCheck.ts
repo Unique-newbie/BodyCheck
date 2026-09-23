@@ -55,12 +55,20 @@ export interface AuditEvent {
   details?: string;
 }
 
+export interface DeltaRegion {
+  x: number; // normalized center x (0 to 1) relative to image width
+  y: number; // normalized center y (0 to 1) relative to image height
+  width: number; // normalized width (0 to 1) relative to image width
+  height: number; // normalized height (0 to 1) relative to image height
+}
+
 export interface CandidateFinding {
   bodyRegion: BodyRegion;
   changeType: ChangeType;
   finding: string;
   confidence: ConfidenceLevel;
   confidenceScore: number;
+  deltaRegion?: DeltaRegion;
   changeCoordinates?: {
     xPercent: number;
     yPercent: number;
@@ -105,7 +113,8 @@ export interface BodyCheckRecord {
   updatedAt?: string; // Latest activity timestamp for sorting recent activity
   createdAt?: string;
   
-  // Visual Reticle Coordinates
+  // Visual Reticle Coordinates & Region
+  deltaRegion?: DeltaRegion;
   changeCoordinates?: {
     xPercent: number;
     yPercent: number;
@@ -142,6 +151,7 @@ export interface AnalysisResult {
   confidenceScore: number;
   aiObservation: string;
   candidateFinding: CandidateFinding;
+  deltaRegion?: DeltaRegion;
   changeCoordinates?: {
     xPercent: number;
     yPercent: number;

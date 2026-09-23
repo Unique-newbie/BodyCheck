@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import { AnalysisResult, BodyCheckRecord, AuditEvent } from '../types/bodyCheck';
 import { UserProfile } from '../types/auth';
 import { PROCESSING_STAGES } from '../services/analysisService';
+import { ImageWithReticle } from './ImageWithReticle';
 import { 
   CheckCircle2, 
   AlertTriangle, 
   Edit3, 
   RotateCcw, 
   Check, 
-  Eye, 
-  EyeOff, 
   ShieldCheck, 
   UserCheck, 
   Clock, 
@@ -70,8 +69,8 @@ export const AnalysisReviewView: React.FC<AnalysisReviewViewProps> = ({
   );
   const [isDraftSavedNotice, setIsDraftSavedNotice] = useState<boolean>(false);
   
-  // State for visual focus overlay on new image
-  const [showFocusOverlay, setShowFocusOverlay] = useState<boolean>(true);
+  // State for visual focus overlay on new image (OFF by default)
+  const [showFocusOverlay, setShowFocusOverlay] = useState<boolean>(false);
   
   // State for human confirmation modal / state
   const [isConfirmingModalOpen, setIsConfirmingModalOpen] = useState<boolean>(false);
@@ -262,6 +261,7 @@ export const AnalysisReviewView: React.FC<AnalysisReviewViewProps> = ({
       confirmedAt: timestamp,
       updatedAt: timestamp,
       reviewerNotes: reviewerNotes || undefined,
+      deltaRegion: analysis.deltaRegion,
       changeCoordinates: analysis.changeCoordinates,
       auditTrail: initialAudit.reverse()
     };
@@ -311,19 +311,16 @@ export const AnalysisReviewView: React.FC<AnalysisReviewViewProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowFocusOverlay(!showFocusOverlay)}
-            className={`text-xs px-2.5 py-1.5 rounded border transition-colors flex items-center gap-1.5 ${
-              showFocusOverlay
-                ? 'bg-sky-50 border-sky-300 text-sky-800 font-medium'
-                : 'bg-white border-slate-300 text-slate-600 hover:bg-slate-50'
-            }`}
-            title="Toggle visual change marker on review image"
-          >
-            {showFocusOverlay ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-            <span>{showFocusOverlay ? 'Delta Reticle On' : 'Hide Reticle'}</span>
-          </button>
+        <div className="flex items-center gap-3">
+          <label className="inline-flex items-center gap-2 cursor-pointer select-none text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 px-3 py-1.5 rounded border border-slate-300 transition-colors shadow-2xs">
+            <input
+              type="checkbox"
+              checked={showFocusOverlay}
+              onChange={(e) => setShowFocusOverlay(e.target.checked)}
+              className="w-4 h-4 rounded text-sky-600 border-slate-300 focus:ring-sky-500 cursor-pointer"
+            />
+            <span>Show change overlay</span>
+          </label>
           
           <button
             onClick={onBackToNew}
@@ -447,58 +444,54 @@ export const AnalysisReviewView: React.FC<AnalysisReviewViewProps> = ({
             </div>
           </div>
 
-          {/* New Image Viewport with Focus Overlay Marker */}
-          <div 
-            className="relative aspect-[4/3] bg-slate-950 flex items-center justify-center overflow-hidden cursor-zoom-in group"
+          {/* New Image Viewport with Image-Anchored Delta Reticle */}
+          <ImageWithReticle
+            src={newImage}
+            alt={`New Review ${newImageId}`}
+            deltaRegion={analysis.deltaRegion}
+            changeCoordinates={analysis.changeCoordinates}
+            showReticle={showFocusOverlay}
+            badgeText="FOLLOW-UP"
+            isNormalOrUnchanged={
+              analysis.finding?.toLowerCase().includes('normal') ||
+              analysis.changeType?.toLowerCase().includes('no significant')
+            }
             onClick={() => setActiveZoomImage({
               title: 'New Review Image',
               src: newImage,
               id: newImageId,
               date: newImageDate
             })}
-          >
-            <img
-              src={newImage}
-              alt={`New Review ${newImageId}`}
-              className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-[1.01]"
-            />
-
-            {/* Visual Change Reticle Overlay */}
-            {showFocusOverlay && analysis.changeCoordinates && (
-              <div
-                className="absolute pointer-events-none transition-all duration-300"
-                style={{
-                  left: `${analysis.changeCoordinates.xPercent}%`,
-                  top: `${analysis.changeCoordinates.yPercent}%`,
-                  transform: 'translate(-50%, -50%)',
-                  width: `${analysis.changeCoordinates.radiusPercent * 2.2}%`,
-                  height: `${analysis.changeCoordinates.radiusPercent * 2.2}%`,
-                }}
-              >
-                <div className="w-full h-full rounded-full border-2 border-dashed border-rose-500 bg-rose-500/15 flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 rounded-full bg-rose-600"></div>
-                </div>
-                <div className="absolute -top-5 left-1/2 -translate-x-1/2 whitespace-nowrap bg-rose-900/90 text-white text-[9px] font-mono px-1.5 py-0.5 rounded shadow">
-                  INDICATED CHANGE
-                </div>
-              </div>
-            )}
-
-            <div className="absolute top-2 left-2 bg-sky-900/85 text-white text-[10px] font-mono px-2 py-0.5 rounded backdrop-blur-xs">
-              FOLLOW-UP
-            </div>
-            <button
-              type="button"
-              className="absolute top-2 right-2 bg-slate-900/75 hover:bg-slate-900 text-white text-[11px] px-2 py-1 rounded backdrop-blur-xs flex items-center gap-1 opacity-90 group-hover:opacity-100 transition-opacity"
-              title="Inspect high-resolution image"
-            >
-              <ZoomIn className="w-3.5 h-3.5" />
-              <span>Inspect</span>
-            </button>
-          </div>
+            onInspect={() => setActiveZoomImage({
+              title: 'New Review Image',
+              src: newImage,
+              id: newImageId,
+              date: newImageDate
+            })}
+          />
 
           <div className="p-3 bg-slate-50 text-[11px] text-slate-500 font-mono border-t border-slate-200 flex justify-between items-center">
-            <span className="text-rose-700 font-semibold">{analysis.finding}</span>
+            <span className={`${
+              analysis.finding?.toLowerCase().includes('normal') || analysis.changeType?.toLowerCase().includes('no significant')
+                ? 'text-emerald-700'
+                : 'text-rose-700'
+            } font-semibold`}>
+              {analysis.finding}
+            </span>
+            {showFocusOverlay && (
+              (analysis.finding?.toLowerCase().includes('normal') ||
+               analysis.changeType?.toLowerCase().includes('no significant') ||
+               !analysis.deltaRegion) ? (
+                <span className="text-emerald-700 font-sans font-medium flex items-center gap-1 text-xs">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  No localized visual change detected
+                </span>
+              ) : (
+                <span className="text-sky-700 font-sans font-medium text-xs">
+                  Change overlay active
+                </span>
+              )
+            )}
           </div>
         </div>
 

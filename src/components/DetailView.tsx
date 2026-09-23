@@ -19,6 +19,7 @@ import {
   PlayCircle
 } from 'lucide-react';
 import { renderStatusBadge } from '../utils/statusUtils';
+import { ImageWithReticle } from './ImageWithReticle';
 
 interface DetailViewProps {
   record: BodyCheckRecord;
@@ -293,43 +294,29 @@ export const DetailView: React.FC<DetailViewProps> = ({
               </span>
             </div>
             {record.newImage ? (
-              <div 
-                className="aspect-[4/3] bg-slate-950 flex items-center justify-center relative cursor-zoom-in group"
+              <ImageWithReticle
+                src={record.newImage}
+                alt="New follow-up review"
+                deltaRegion={record.deltaRegion}
+                changeCoordinates={record.changeCoordinates}
+                showReticle={record.status !== 'not_analyzed' && record.status !== 'ready_to_analyze'}
+                isNormalOrUnchanged={
+                  record.finding?.toLowerCase().includes('normal') ||
+                  record.changeType?.toLowerCase().includes('no significant')
+                }
                 onClick={() => setActiveZoomImage({
                   title: 'New Review Image',
                   src: record.newImage || '',
                   id: record.newImageId || '',
                   date: record.newImageDate || ''
                 })}
-              >
-                <img
-                  src={record.newImage}
-                  alt="New follow-up review"
-                  className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-[1.01]"
-                />
-                {record.changeCoordinates && (
-                  <div
-                    className="absolute pointer-events-none"
-                    style={{
-                      left: `${record.changeCoordinates.xPercent}%`,
-                      top: `${record.changeCoordinates.yPercent}%`,
-                      transform: 'translate(-50%, -50%)',
-                      width: `${record.changeCoordinates.radiusPercent * 2.2}%`,
-                      height: `${record.changeCoordinates.radiusPercent * 2.2}%`,
-                    }}
-                  >
-                    <div className="w-full h-full rounded-full border-2 border-dashed border-rose-500 bg-rose-500/20"></div>
-                  </div>
-                )}
-                <button
-                  type="button"
-                  className="absolute top-2 right-2 bg-slate-900/75 hover:bg-slate-900 text-white text-[11px] px-2 py-1 rounded backdrop-blur-xs flex items-center gap-1 opacity-90 group-hover:opacity-100 transition-opacity no-print"
-                  title="Inspect high-resolution image"
-                >
-                  <ZoomIn className="w-3.5 h-3.5" />
-                  <span>Inspect</span>
-                </button>
-              </div>
+                onInspect={() => setActiveZoomImage({
+                  title: 'New Review Image',
+                  src: record.newImage || '',
+                  id: record.newImageId || '',
+                  date: record.newImageDate || ''
+                })}
+              />
             ) : (
               <div className="aspect-[4/3] bg-slate-100 flex flex-col items-center justify-center p-6 text-center">
                 <Clock className="w-8 h-8 text-slate-400 mb-2" />

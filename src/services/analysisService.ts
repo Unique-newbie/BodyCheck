@@ -1,5 +1,6 @@
 import { AnalysisResult, BodyRegion, CandidateFinding, ChangeType } from '../types/bodyCheck';
 import { DEMO_SCENARIOS } from '../data/mockRecords';
+import { detectVisualChange } from '../utils/visualChangeDetector';
 
 export interface AnalysisParams {
   patientRecordId: string;
@@ -80,26 +81,35 @@ export async function analyzeBodyCheck(params: AnalysisParams): Promise<Analysis
       confidenceScore: matchedScenario.expectedResult.confidenceScore,
       candidateFinding: matchedScenario.expectedResult.candidateFinding,
       aiObservation: matchedScenario.expectedResult.aiObservation,
+      deltaRegion: matchedScenario.expectedResult.deltaRegion,
       changeCoordinates: matchedScenario.expectedResult.changeCoordinates
     };
   }
 
-  // 2. Generic fallback for custom uploaded images / custom IDs
-  const defaultChangeType: ChangeType = 'Color / Skin Appearance Change';
-  const defaultFinding = 'Visible reddish discoloration / bruise-like appearance';
-  const customObservation = `Reviewing the new picture against reference image ${referenceImageId}, there is a visible change in skin appearance with localized reddish discoloration in the ${bodyRegion.toLowerCase()} area, suggesting a possible bruise-like change.`;
+  // 2. Dynamic visual delta detection for custom / uploaded images
+  const visualResult = await detectVisualChange(params.referenceImage, params.newImage, patientRecordId);
+  const defaultChangeType: ChangeType = visualResult.detected
+    ? 'Color / Skin Appearance Change'
+    : 'No Significant Visible Change';
+  const defaultFinding = visualResult.detected
+    ? 'Visible reddish discoloration / bruise-like appearance'
+    : 'Normal/no significant visible change';
+  const customObservation = visualResult.detected
+    ? `Reviewing the new picture against reference image ${referenceImageId}, there is a visible change in skin appearance with localized reddish discoloration in the ${bodyRegion.toLowerCase()} area, suggesting a possible bruise-like change.`
+    : `Reviewing the new picture against reference image ${referenceImageId}, no significant visible change was identified in the ${bodyRegion.toLowerCase()} area.`;
 
   const customCandidateFinding: CandidateFinding = {
     bodyRegion,
     changeType: defaultChangeType,
     finding: defaultFinding,
-    confidence: 'Moderate',
-    confidenceScore: 0.76,
-    changeCoordinates: {
-      xPercent: 50,
-      yPercent: 48,
-      radiusPercent: 12
-    }
+    confidence: visualResult.detected ? 'Moderate' : 'High',
+    confidenceScore: visualResult.detected ? 0.76 : 0.95,
+    deltaRegion: visualResult.deltaRegion,
+    changeCoordinates: visualResult.deltaRegion ? {
+      xPercent: visualResult.deltaRegion.x * 100,
+      yPercent: visualResult.deltaRegion.y * 100,
+      radiusPercent: Math.round((visualResult.deltaRegion.width * 100) / 2)
+    } : undefined
   };
 
   return {
@@ -110,14 +120,11 @@ export async function analyzeBodyCheck(params: AnalysisParams): Promise<Analysis
     bodyRegion,
     changeType: defaultChangeType,
     finding: defaultFinding,
-    confidence: 'Moderate',
-    confidenceScore: 0.76,
+    confidence: visualResult.detected ? 'Moderate' : 'High',
+    confidenceScore: visualResult.detected ? 0.76 : 0.95,
     candidateFinding: customCandidateFinding,
     aiObservation: customObservation,
-    changeCoordinates: {
-      xPercent: 50,
-      yPercent: 48,
-      radiusPercent: 12
-    }
+    deltaRegion: visualResult.deltaRegion,
+    changeCoordinates: customCandidateFinding.changeCoordinates
   };
 }

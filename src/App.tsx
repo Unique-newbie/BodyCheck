@@ -195,6 +195,7 @@ export const App: React.FC = () => {
         aiObservation: result.aiObservation,
         finalObservation: '',
         status: 'ready_for_review',
+        deltaRegion: result.deltaRegion,
         changeCoordinates: result.changeCoordinates,
         updatedAt: nowStr,
         createdAt: existingRecord?.createdAt || nowStr,
